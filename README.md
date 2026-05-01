@@ -95,6 +95,43 @@ Turn a lesson plan into a teaching slide deck with learning objectives, lesson f
 - Accepts design ID, short links, or search by name; disambiguation when needed; optional clarifying questions when the plan is thin
 - Uses brand kits like other presentation skills
 
+### canva-api
+
+Build, debug, and review server-side integrations with the Canva REST API (Connect APIs).
+
+**Use when:** You are writing backend code that calls the Canva REST API — OAuth, assets, designs, exports, folders, webhooks, or debugging API errors.
+
+**Capabilities:**
+
+- OAuth 2.0 Authorization Code flow implementation for Express/Node.js
+- Authenticated REST request patterns with token refresh and error handling
+- Design export workflows (async job creation, polling, download)
+- Asset upload workflows (direct and URL-based)
+- Webhook setup, signature verification, and idempotent event handling
+- Debugging guidance for 400/401/403/404/429/5xx errors
+- REST API vs Apps SDK decision guidance
+- App review readiness checklist
+- Uses live Canva.dev markdown docs as source of truth for endpoint paths, fields, and scopes — never invents API details
+
+**Why live docs?**
+
+Endpoint paths, request fields, OAuth scopes, and rate limits change over time. This skill fetches the relevant `https://www.canva.dev/docs/connect/*.md` page before answering endpoint-specific questions, so answers reflect the current API rather than a bundled snapshot. Stable guidance (security rules, OAuth principles, troubleshooting patterns) is bundled locally.
+
+**Online vs offline mode:**
+
+- *Online (default)*: fetches the relevant Canva.dev markdown page before answering endpoint-specific questions.
+- *Offline*: answers using bundled security, troubleshooting, and principles guidance. Explicitly flags any endpoint-specific detail it cannot verify.
+
+**How to update doc references:**
+
+Edit `canva-api/references/doc-index.md`. Each section maps developer intent to a Canva.dev markdown URL. The canonical URL indexes are `https://www.canva.dev/docs/connect/llms.txt` and `https://www.canva.dev/docs/apps/llms.txt`.
+
+**How to add new workflows:**
+
+1. Create a new file in `canva-api/workflows/` following the structure in existing workflow files.
+2. Add the new workflow to the relevant section(s) in `canva-api/references/doc-index.md` under `Also load`.
+3. Update `canva-api/SKILL.md` progressive disclosure table if the workflow covers a new task type.
+
 ## Installation
 
 ### For Claude Desktop
@@ -145,21 +182,45 @@ Works seamlessly in both Claude Desktop and Claude Code CLI.
 
 ```
 canva-claude-skills/
-├── README.md                    # This file
-├── branded-presentation/        # Presentation generation skill
+├── README.md                         # This file
+├── branded-presentation/             # Presentation generation skill
 │   └── SKILL.md
-├── design-translation/          # Translation skill
+├── design-translation/               # Translation skill
 │   └── SKILL.md
-├── implement-feedback/          # Review feedback skill
+├── implement-feedback/               # Review feedback skill
 │   └── SKILL.md
-├── presentation-time-fitting/   # Speaking duration and speaker notes
+├── presentation-time-fitting/        # Speaking duration and speaker notes
 │   └── SKILL.md
-├── resize-for-social-media/     # Multi-format resize skill
+├── resize-for-social-media/          # Multi-format resize skill
 │   └── SKILL.md
-├── bulk-create/                 # Tabular data → one design per row
+├── bulk-create/                      # Tabular data → one design per row
 │   └── SKILL.md
-└── classroom-helper/            # Lesson plan → teaching deck
-    └── SKILL.md
+├── classroom-helper/                 # Lesson plan → teaching deck
+│   └── SKILL.md
+└── canva-api/                        # Canva REST API integration skill
+    ├── SKILL.md
+    ├── references/
+    │   ├── doc-index.md              # Maps intent → Canva.dev markdown URLs
+    │   ├── api-surface-map.md        # REST API vs Apps SDK decision guide
+    │   ├── security.md
+    │   ├── troubleshooting.md
+    │   ├── answer-templates.md
+    │   ├── terminology.md
+    │   └── auth-principles.md
+    ├── workflows/
+    │   ├── oauth.md
+    │   ├── authenticated-request.md
+    │   ├── export-design.md
+    │   ├── upload-asset.md
+    │   ├── webhooks.md
+    │   └── review-readiness.md
+    └── examples/
+        ├── node/
+        │   ├── canva-client.md       # Generic typed API client
+        │   ├── oauth-express.md      # Express OAuth skeleton
+        │   └── token-store.md        # TokenStore interface + in-memory impl
+        └── curl/
+            └── README.md             # cURL patterns with placeholder URLs
 ```
 
 ## Contributing
