@@ -163,7 +163,7 @@ Note: Facebook Story and Instagram Story use the same dimensions (1080×1920).
 
 ## Key Implementation Notes
 
-- **Compatibility**: Check if `resize-design` is available in the current MCP tools. If not, inform the user that this skill requires the Claude Desktop and is not supported by Claude Code
+- **Compatibility**: Check if `resize-design` is available in the current MCP tools. If not, inform the user that this skill requires the Canva MCP resize tool in the current host
 - **Parallel execution**: Resize and export operations should be performed in parallel for efficiency
 - **PNG export**: Always export as PNG with pro quality for best image quality
 - **Direct download links**: Provide users with direct PNG download links (do not attempt to download files server-side or create zip files, as network restrictions prevent this)
