@@ -1,0 +1,20 @@
+{
+  "name": "canva-skills",
+  "interface": {
+    "displayName": "Canva Skills"
+  },
+  "plugins": [
+    {
+      "name": "canva",
+      "source": {
+        "source": "local",
+        "path": "./plugins/canva"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

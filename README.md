@@ -1,60 +1,38 @@
-# Canva Skills for Claude
+# Canva Agent Skills
 
-Professional Claude skills for working with Canva designs. These skills enable powerful Canva workflows in both Claude Desktop and Claude Code CLI.
+Professional agent skills for working with Canva designs. This repo is a
+marketplace-style package: root-level marketplace metadata points to one shared
+plugin package under `plugins/canva/`, which supports Claude Code, Cursor, and
+Codex.
 
-## Available Skills
+## How This Repo Is Organized
 
-### branded-presentation
+This repo separates host entrypoints from the reusable Canva plugin package:
 
-Create on-brand presentations from outlines or briefs using Canva brand kits.
+```text
+marketplace/catalog -> exposes plugin package -> plugin contains skills
+```
 
-**Use when:** You want to generate a professional presentation with consistent branding from text content, outlines, or Canva docs.
+- **Marketplaces/catalogs** expose installable plugins to a host.
+- **Plugins** are the installable distribution unit.
+- **Skills** live inside the plugin package because they are bundled with the
+  plugin when installed.
 
-**Capabilities:**
+The shared Canva plugin package is `plugins/canva/`. It contains the active
+`skills/` directory, host-specific plugin manifests, and Canva MCP registration.
 
-- Converts outlines and briefs into structured slide decks
-- Automatically applies your Canva brand kits
-- Reads content from text, Canva docs, or design links
-- Generates multiple design candidates for selection
+The root hidden folders are host entrypoints:
 
-### design-translation
+- `.agents/plugins/marketplace.json` — Codex marketplace entrypoint
+- `.claude-plugin/marketplace.json` — Claude plugin marketplace entrypoint
+- `.cursor/` — Cursor project config, not a marketplace
 
-Translate all text in a Canva design to another language, creating localized copies.
+Each host entrypoint folder has a small README with setup notes for that host.
 
-**Use when:** You need to create multilingual versions of your designs without manually editing each text element.
+## Active Plugin Skills
 
-**Capabilities:**
-
-- Translates all text elements while preserving layout
-- Creates a new copy, leaving the original untouched
-- Supports any language Claude can translate
-- Batch processes all text in a single operation
-
-### implement-feedback
-
-Implement reviewer feedback on a Canva design — read comment threads, make the clear-cut changes.
-
-**Use when:** A design has been reviewed and you want to apply the feedback without manually reading every comment thread and editing each slide.
-
-**Capabilities:**
-
-- Reads all comment threads and replies across the design
-- Triages feedback into actionable, ambiguous, and manual-only categories
-- Applies API-supported changes (text, formatting, images) in a single batch
-- Presents a checklist of remaining manual changes with step-by-step instructions
-- Replies to comment threads to close the feedback loop
-
-### presentation-time-fitting
-
-Fit a presentation to a target speaking duration, especially by allocating time evenly across slides and generating presenter notes.
-
-**Use when:** You want a deck to match a slot (e.g. 15 minutes), even time per slide, or speaker notes written for timing. (On-slide copy is not edited; shorten or lengthen **slides** in Canva or elsewhere.)
-
-**Capabilities:**
-
-- Confirms design and target duration before cloning; reads slide text with `get-design-content` for context only, computes per-slide time and word budget
-- Generates or adjusts **presenter notes only** in the chat (no external API); writes them back via `get-design-pages` and editing APIs
-- Clones the design before note changes; does not change visible slide text; cannot add/remove slides via API
+These skills are exposed consistently by Claude Code, Cursor, and Codex through
+the shared `plugins/canva/skills/` directory.
 
 ### resize-for-social-media
 
@@ -82,32 +60,149 @@ Bulk-create Canva designs from tabular data using a brand template with autofill
 - Creates one design per row with `autofill-design` (handles text, image assets, and chart fields per the skill)
 - Supports Enterprise autofill workflows where available
 
-### classroom-helper
+### implement-feedback
 
-Turn a lesson plan into a teaching slide deck with learning objectives, lesson flow, and speaker notes.
+Implement reviewer feedback on a Canva design — read comment threads, make the clear-cut changes.
 
-**Use when:** You want classroom slides built from a lesson plan (pasted text, Canva design ID, Canva doc or design name, or design link).
+**Use when:** A design has been reviewed and you want to apply the feedback without manually reading every comment thread and editing each slide.
 
 **Capabilities:**
 
-- Maps lesson plans to a structured teaching deck (objectives, arc, slide-by-slide notes)
-- Pacing and slide-budget hints tied to lesson length; student-facing slides vs teacher speaker notes
-- Accepts design ID, short links, or search by name; disambiguation when needed; optional clarifying questions when the plan is thin
-- Uses brand kits like other presentation skills
+- Reads all comment threads and replies across the design
+- Triages feedback into actionable, ambiguous, and manual-only categories
+- Applies API-supported changes (text, formatting, images) in a single batch
+- Presents a checklist of remaining manual changes with step-by-step instructions
+- Replies to comment threads to close the feedback loop
+
+### edit-design
+
+Make safe, approval-gated edits to an existing Canva design.
+
+**Use when:** You want to change, fix, replace, or reformat content in a specific Canva design.
+
+**Capabilities:**
+
+- Starts a Canva editing transaction, performs batched operations, and commits only after approval
+- Changes text content and supported text formatting
+- Replaces, inserts, deletes, repositions, or resizes supported media and elements
+- Clearly flags changes that the Canva API cannot perform
+
+### get-design-feedback
+
+Read a Canva design and return structured, actionable design feedback.
+
+**Use when:** You want critique on visual hierarchy, copy, layout, spacing, consistency, readability, accessibility, or fit for purpose.
+
+**Capabilities:**
+
+- Reads rendered thumbnails and design text
+- Uses read-only inspection for layout details where available
+- Prioritizes page-specific findings with concrete fixes
+- Never edits or commits changes
+
+### brand-check
+
+Check a Canva design against a brand kit and report where it diverges.
+
+**Use when:** You want to know whether a design is on brand, including colors, typography, logo handling, tone, and consistency.
+
+**Capabilities:**
+
+- Lists available brand kits and compares against the selected kit
+- Uses thumbnails as primary evidence when exact colors/fonts are not exposed
+- Marks findings as on brand, off brand, or can't verify
+- Makes no changes unless the user asks to hand off fixable items to `edit-design`
+
+## Inactive Skills
+
+The repo also keeps additional skill work under
+`plugins/canva/inactive-skills/`. These are not exposed by Claude Code, Cursor,
+or Codex because each host now registers the same active subset from
+`plugins/canva/skills/`.
+
+- `branded-presentation`
+- `classroom-helper`
+- `design-translation`
+- `presentation-time-fitting`
 
 ## Installation
 
 ### For Claude Desktop
 
 1. Clone or download this repository
-2. Add skills to your Claude Desktop configuration
+2. Install the `canva` plugin from the root `.claude-plugin/marketplace.json`
 3. Restart Claude Desktop to load the skills
 
 ### For Claude Code CLI
 
-1. Clone this repository
-2. Follow the [Claude Code skill installation guide](https://github.com/anthropics/claude-code)
-3. Start using the skills from your terminal
+Install from GitHub:
+
+```bash
+/plugin marketplace add canva-sdks/canva-claude-skills
+/plugin install canva@canva-skills
+```
+
+If you already added this marketplace before, refresh it instead:
+
+```bash
+/plugin marketplace update canva-skills
+```
+
+Then sign in to Canva when prompted and use the skills from your terminal.
+
+### For Cursor
+
+1. Open this repository in Cursor (`.cursor/mcp.json` and `.cursor/skills/` load automatically), or open `plugins/canva/` directly
+2. In **Settings → MCP Tools**, connect the `canva` server and sign in with Canva
+3. Use the skills naturally in agent chat — see [.cursor/README.md](.cursor/README.md) for details
+
+### For Codex
+
+```bash
+codex plugin marketplace add canva-sdks/canva-claude-skills
+codex plugin add canva@canva-skills
+codex mcp login canva
+```
+
+If you already added this marketplace before, refresh it instead:
+
+```bash
+codex plugin marketplace upgrade canva-skills
+```
+
+Then start a new Codex thread and use `@canva` or ask for Canva workflows
+naturally.
+
+Codex uses the root `.agents/plugins/marketplace.json` to find the package at
+`plugins/canva/`, then uses `plugins/canva/.codex-plugin/plugin.json` for plugin
+metadata, `plugins/canva/.mcp.json` for the Canva MCP server, and
+`plugins/canva/skills/` as the single source of truth for active skill
+instructions.
+
+The Codex marketplace entry points at the shared package:
+
+```json
+{
+  "name": "canva-skills",
+  "interface": {
+    "displayName": "Canva Skills"
+  },
+  "plugins": [
+    {
+      "name": "canva",
+      "source": {
+        "source": "local",
+        "path": "./plugins/canva"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
+```
 
 ## Usage
 
@@ -116,60 +211,71 @@ Simply reference the skills naturally in your conversations:
 **Examples:**
 
 ```
-# Branded presentation
-"Create a presentation from my product launch outline using our brand kit"
-
-# Design translation
-"Translate my Summer Sale Poster design to French"
-
-# Implement feedback
-"Implement the feedback on my deck"
-
-# Presentation time-fitting
-"Make this a 10-minute presentation"
-
 # Social media resize
 "Resize design DABcd1234ef for all social media platforms"
 
 # Bulk create
 "Bulk create designs from this CSV using my brand template"
 
-# Classroom helper
-"Turn this lesson plan into a slide deck for my 7th grade science class"
-"Build slides from the lesson plan in design DABcd1234ef"
+# Implement feedback
+"Implement the feedback on my deck"
+
+# Edit design
+"Change the headline in this Canva design and make it bold"
+
+# Design feedback
+"Review this Canva design and tell me what to improve"
+
+# Brand check
+"Check this Canva design against my brand kit"
 ```
 
-Works seamlessly in both Claude Desktop and Claude Code CLI.
+Works seamlessly in Claude Desktop, Claude Code CLI, Cursor, and Codex.
 
 ## Repository Structure
 
 ```
 canva-claude-skills/
-├── README.md                    # This file
-├── branded-presentation/        # Presentation generation skill
-│   └── SKILL.md
-├── design-translation/          # Translation skill
-│   └── SKILL.md
-├── implement-feedback/          # Review feedback skill
-│   └── SKILL.md
-├── presentation-time-fitting/   # Speaking duration and speaker notes
-│   └── SKILL.md
-├── resize-for-social-media/     # Multi-format resize skill
-│   └── SKILL.md
-├── bulk-create/                 # Tabular data → one design per row
-│   └── SKILL.md
-└── classroom-helper/            # Lesson plan → teaching deck
-    └── SKILL.md
+├── README.md
+├── .agents/plugins/                      # Codex marketplace entrypoint
+│   ├── README.md
+│   └── marketplace.json
+├── .claude-plugin/                       # Claude marketplace entrypoint
+│   ├── README.md
+│   └── marketplace.json
+├── .cursor/                              # Cursor root convenience config
+│   ├── README.md
+│   ├── mcp.json
+│   └── skills -> ../plugins/canva/skills
+└── plugins/
+    └── canva/
+        ├── .claude-plugin/plugin.json    # Claude plugin manifest
+        ├── .codex-plugin/plugin.json     # Codex plugin manifest
+        ├── .cursor/                      # Cursor config when opening package directly
+        ├── .mcp.json                     # Codex MCP server registration
+        ├── skills/                       # Active plugin skills exposed by all hosts
+        │   ├── brand-check/
+        │   ├── bulk-create/
+        │   ├── edit-design/
+        │   ├── get-design-feedback/
+        │   ├── implement-feedback/
+        │   └── resize-for-social-media/
+        └── inactive-skills/              # Kept in repo, not registered by plugin hosts
+            ├── branded-presentation/
+            ├── classroom-helper/
+            ├── design-translation/
+            └── presentation-time-fitting/
 ```
 
 ## Contributing
 
 To add a new skill:
 
-1. Create a new directory with a kebab-case name
+1. Create a new directory under `plugins/canva/inactive-skills/` while drafting, or under `plugins/canva/skills/` when it should be exposed by every plugin host
 2. Add a `SKILL.md` file with skill metadata and workflow
 3. Follow the existing skill patterns for consistency
-4. Update this README with the new skill
+4. Register active skills in `plugins/canva/.claude-plugin/plugin.json` so Claude Code matches Cursor and Codex
+5. Update this README with the new skill
 
 ## License
 
