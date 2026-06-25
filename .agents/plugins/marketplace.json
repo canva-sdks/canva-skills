@@ -10,11 +10,11 @@
         "source": "local",
         "path": "./plugins/canva"
       },
+      "description": "Create, edit, review, resize, and brand-check Canva designs with the Canva MCP server.",
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
+      }
     }
   ]
 }

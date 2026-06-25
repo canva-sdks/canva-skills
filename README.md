@@ -1,9 +1,8 @@
 # Canva Agent Skills
 
-Professional agent skills for working with Canva designs. This repo is a
-marketplace-style package: root-level marketplace metadata points to one shared
-plugin package under `plugins/canva/`, which supports Claude Code, Cursor, and
-Codex.
+Agent skills for working with Canva designs. This repo is a marketplace-style
+package: root-level marketplace metadata points to one shared plugin package
+under `plugins/canva/`, which supports Claude, Cursor, and Codex.
 
 ## How This Repo Is Organized
 
@@ -24,15 +23,16 @@ The shared Canva plugin package is `plugins/canva/`. It contains the active
 The root hidden folders are host entrypoints:
 
 - `.agents/plugins/marketplace.json` — Codex marketplace entrypoint
-- `.claude-plugin/marketplace.json` — Claude plugin marketplace entrypoint
+- `.claude-plugin/marketplace.json` — Claude marketplace entrypoint
+- `.cursor-plugin/marketplace.json` — Cursor marketplace entrypoint
 - `.cursor/` — Cursor project config, not a marketplace
 
 Each host entrypoint folder has a small README with setup notes for that host.
 
 ## Active Plugin Skills
 
-These skills are exposed consistently by Claude Code, Cursor, and Codex through
-the shared `plugins/canva/skills/` directory.
+These skills are exposed by every supported host through the shared
+`plugins/canva/skills/` directory.
 
 ### resize-for-social-media
 
@@ -42,27 +42,26 @@ Resize designs for multiple social media platforms (Facebook, Instagram, LinkedI
 
 **Capabilities:**
 
-- Creates 5 platform-optimized versions (Facebook post/story, Instagram post/story, LinkedIn post)
-- Exports all versions as high-quality PNGs
-- Provides direct download links and Canva edit links
-- Executes all operations in parallel for speed
+- Creates platform-optimized versions (e.g. Facebook post/story, Instagram post/story, LinkedIn post)
+- Provides Canva edit links so users can download or refine each version
+- Resizes selected formats in parallel
 
 ### bulk-create
 
-Bulk-create Canva designs from tabular data using a brand template with autofill fields — one design per row.
+Bulk-create Canva designs from tabular data using a brand template, one design per row.
 
 **Use when:** You want to generate many designs from a CSV, spreadsheet, pasted table, or JSON (e.g. one design per product or row).
 
 **Capabilities:**
 
-- Parses tabular data from files, pasted content, or URLs
-- Finds autofill-capable brand templates and maps columns to template fields
-- Creates one design per row with `autofill-design` (handles text, image assets, and chart fields per the skill)
-- Supports Enterprise autofill workflows where available
+- Accepts tabular data from uploaded files, pasted content, or URLs
+- Finds brand templates that support autofill and maps columns to template fields
+- Creates one design per row with `autofill-design` (text, image, and chart fields where supported)
+- Requires Canva Enterprise for autofill
 
 ### implement-feedback
 
-Implement reviewer feedback on a Canva design — read comment threads, make the clear-cut changes.
+Implement reviewer feedback on a Canva design: read comment threads and apply the changes the API supports.
 
 **Use when:** A design has been reviewed and you want to apply the feedback without manually reading every comment thread and editing each slide.
 
@@ -70,9 +69,9 @@ Implement reviewer feedback on a Canva design — read comment threads, make the
 
 - Reads all comment threads and replies across the design
 - Triages feedback into actionable, ambiguous, and manual-only categories
-- Applies API-supported changes (text, formatting, images) in a single batch
+- Applies API-supported changes (text, formatting, images) after user approval
 - Presents a checklist of remaining manual changes with step-by-step instructions
-- Replies to comment threads to close the feedback loop
+- Replies to comment threads after changes are made
 
 ### edit-design
 
@@ -109,16 +108,15 @@ Check a Canva design against a brand kit and report where it diverges.
 **Capabilities:**
 
 - Lists available brand kits and compares against the selected kit
-- Uses thumbnails as primary evidence when exact colors/fonts are not exposed
+- Uses design and brand-kit thumbnails when exact colors or fonts are not available from the API
 - Marks findings as on brand, off brand, or can't verify
-- Makes no changes unless the user asks to hand off fixable items to `edit-design`
+- Offers to hand off fixable items to `edit-design` if the user wants changes made
 
 ## Inactive Skills
 
 The repo also keeps additional skill work under
-`plugins/canva/inactive-skills/`. These are not exposed by Claude Code, Cursor,
-or Codex because each host now registers the same active subset from
-`plugins/canva/skills/`.
+`plugins/canva/inactive-skills/`. These are not registered by any plugin host
+because each host exposes the same active subset from `plugins/canva/skills/`.
 
 - `branded-presentation`
 - `classroom-helper`
@@ -127,18 +125,15 @@ or Codex because each host now registers the same active subset from
 
 ## Installation
 
-### For Claude Desktop
+Each host uses the Canva MCP server at `https://mcp.canva.com/mcp`. Connect the
+`canva` MCP server and sign in to Canva when prompted.
 
-1. Clone or download this repository
-2. Install the `canva` plugin from the root `.claude-plugin/marketplace.json`
-3. Restart Claude Desktop to load the skills
-
-### For Claude Code CLI
+### Claude
 
 Install from GitHub:
 
 ```bash
-/plugin marketplace add canva-sdks/canva-claude-skills
+/plugin marketplace add canva-sdks/canva-skills
 /plugin install canva@canva-skills
 ```
 
@@ -148,18 +143,26 @@ If you already added this marketplace before, refresh it instead:
 /plugin marketplace update canva-skills
 ```
 
-Then sign in to Canva when prompted and use the skills from your terminal.
+This works in Claude Code, Claude Desktop, and other Claude clients that support
+plugin marketplaces. See [.claude-plugin/README.md](.claude-plugin/README.md)
+for details.
 
-### For Cursor
+### Cursor
 
-1. Open this repository in Cursor (`.cursor/mcp.json` and `.cursor/skills/` load automatically), or open `plugins/canva/` directly
+Cursor Marketplace installs use `.cursor-plugin/marketplace.json` and
+`plugins/canva/.cursor-plugin/plugin.json`. See
+[.cursor-plugin/README.md](.cursor-plugin/README.md) for marketplace details.
+
+To use the skills while working in this repo:
+
+1. Open this repo in Cursor (`.cursor/mcp.json` and `.cursor/skills/` load automatically), or open `plugins/canva/` directly
 2. In **Settings → MCP Tools**, connect the `canva` server and sign in with Canva
 3. Use the skills naturally in agent chat — see [.cursor/README.md](.cursor/README.md) for details
 
-### For Codex
+### Codex
 
 ```bash
-codex plugin marketplace add canva-sdks/canva-claude-skills
+codex plugin marketplace add canva-sdks/canva-skills
 codex plugin add canva@canva-skills
 codex mcp login canva
 ```
@@ -171,38 +174,13 @@ codex plugin marketplace upgrade canva-skills
 ```
 
 Then start a new Codex thread and use `@canva` or ask for Canva workflows
-naturally.
+naturally. See [.agents/plugins/README.md](.agents/plugins/README.md) for
+details.
 
-Codex uses the root `.agents/plugins/marketplace.json` to find the package at
-`plugins/canva/`, then uses `plugins/canva/.codex-plugin/plugin.json` for plugin
+Codex uses `.agents/plugins/marketplace.json` to find the package at
+`plugins/canva/`, then `plugins/canva/.codex-plugin/plugin.json` for plugin
 metadata, `plugins/canva/.mcp.json` for the Canva MCP server, and
-`plugins/canva/skills/` as the single source of truth for active skill
-instructions.
-
-The Codex marketplace entry points at the shared package:
-
-```json
-{
-  "name": "canva-skills",
-  "interface": {
-    "displayName": "Canva Skills"
-  },
-  "plugins": [
-    {
-      "name": "canva",
-      "source": {
-        "source": "local",
-        "path": "./plugins/canva"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    }
-  ]
-}
-```
+`plugins/canva/skills/` for the active skill set.
 
 ## Usage
 
@@ -215,7 +193,7 @@ Simply reference the skills naturally in your conversations:
 "Resize design DABcd1234ef for all social media platforms"
 
 # Bulk create
-"Bulk create designs from this CSV using my brand template"
+"Bulk create designs from this spreadsheet using my brand template"
 
 # Implement feedback
 "Implement the feedback on my deck"
@@ -230,12 +208,13 @@ Simply reference the skills naturally in your conversations:
 "Check this Canva design against my brand kit"
 ```
 
-Works seamlessly in Claude Desktop, Claude Code CLI, Cursor, and Codex.
+Works in Claude, Cursor, and Codex.
 
 ## Repository Structure
 
 ```
-canva-claude-skills/
+canva-skills/
+├── LICENSE
 ├── README.md
 ├── .agents/plugins/                      # Codex marketplace entrypoint
 │   ├── README.md
@@ -243,16 +222,21 @@ canva-claude-skills/
 ├── .claude-plugin/                       # Claude marketplace entrypoint
 │   ├── README.md
 │   └── marketplace.json
-├── .cursor/                              # Cursor root convenience config
+├── .cursor-plugin/                       # Cursor marketplace entrypoint
+│   ├── README.md
+│   └── marketplace.json
+├── .cursor/                              # Cursor project config, not a marketplace
 │   ├── README.md
 │   ├── mcp.json
 │   └── skills -> ../plugins/canva/skills
 └── plugins/
     └── canva/
+        ├── README.md
         ├── .claude-plugin/plugin.json    # Claude plugin manifest
+        ├── .cursor-plugin/plugin.json    # Cursor plugin manifest
         ├── .codex-plugin/plugin.json     # Codex plugin manifest
-        ├── .cursor/                      # Cursor config when opening package directly
-        ├── .mcp.json                     # Codex MCP server registration
+        ├── .cursor/                      # Cursor project config when opening package directly
+        ├── .mcp.json                     # MCP registration for Cursor marketplace and Codex
         ├── skills/                       # Active plugin skills exposed by all hosts
         │   ├── brand-check/
         │   ├── bulk-create/
@@ -274,9 +258,9 @@ To add a new skill:
 1. Create a new directory under `plugins/canva/inactive-skills/` while drafting, or under `plugins/canva/skills/` when it should be exposed by every plugin host
 2. Add a `SKILL.md` file with skill metadata and workflow
 3. Follow the existing skill patterns for consistency
-4. Register active skills in `plugins/canva/.claude-plugin/plugin.json` so Claude Code matches Cursor and Codex
+4. Register active skills in `plugins/canva/.claude-plugin/plugin.json` (Claude requires an explicit list; Cursor and Codex discover skills from `./skills/`)
 5. Update this README with the new skill
 
 ## License
 
-[Add your license here]
+Apache License 2.0 - see [LICENSE](LICENSE) for details.

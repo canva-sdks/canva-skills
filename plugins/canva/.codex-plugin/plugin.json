@@ -1,13 +1,13 @@
 {
   "name": "canva",
   "version": "1.0.0",
-  "description": "Create, edit, review, resize, and manage Canva designs from Codex.",
+  "description": "Create, edit, review, resize, and brand-check Canva designs with the Canva MCP server.",
   "author": {
     "name": "Canva",
     "url": "https://www.canva.com/"
   },
   "homepage": "https://www.canva.com/developers/",
-  "repository": "https://github.com/canva-sdks/canva-claude-skills",
+  "repository": "https://github.com/canva-sdks/canva-skills",
   "keywords": [
     "canva",
     "design",
@@ -27,7 +27,6 @@
     "shortDescription": "Create and manage Canva designs",
     "longDescription": "Use Canva in Codex to create, resize, review, brand-check, and edit Canva designs with the Canva MCP server.",
     "developerName": "Canva",
-    "category": "Productivity",
     "capabilities": [
       "Interactive",
       "Read",

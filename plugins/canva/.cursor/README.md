@@ -1,15 +1,12 @@
 # Using these Canva skills in Cursor
 
-The skills in this package follow the open **Agent Skills** standard (`SKILL.md`),
-so Cursor uses the same active skill files as Claude Code and Codex.
+The skills in this package follow the open **Agent Skills** standard (`SKILL.md`).
 
 ## What's here
 
-- **`skills/`** — active assistant-neutral skill folders
+- **`skills/`** — active skill folders
 - **`.cursor/skills`** — symlink to `../skills` so Cursor discovers package skills
-- **`.cursor/mcp.json`** — registers the official Canva MCP server, which
-  provides the tools the skills call (resize, export, editing transactions,
-  brand kits, comments, etc.)
+- **`.cursor/mcp.json`** — registers the Canva MCP server for workspace use
 
 ## Setup
 
@@ -22,9 +19,8 @@ so Cursor uses the same active skill files as Claude Code and Codex.
 
 ## Notes
 
-- The MCP server is shared with every other host; only the registration file
-  differs.
+- MCP server: `https://mcp.canva.com/mcp`
 - Skills kept under `inactive-skills/` are not exposed to Cursor because
   `.cursor/skills` points only to `../skills`.
-- `mcp-remote` is a stdio shim for the remote server; if your Cursor version
-  supports remote MCP servers directly you can point at the URL without it.
+- For Cursor Marketplace installs, see
+  [.cursor-plugin/README.md](../../.cursor-plugin/README.md).
