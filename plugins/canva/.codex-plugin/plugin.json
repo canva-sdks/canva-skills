@@ -6,6 +6,7 @@
     "name": "Canva",
     "url": "https://www.canva.com/"
   },
+  "logo": "assets/logo.png",
   "homepage": "https://www.canva.com/developers/",
   "repository": "https://github.com/canva-sdks/canva-skills",
   "keywords": [
