@@ -1,6 +1,6 @@
 # Claude Marketplace Entrypoint
 
-This folder contains the Claude plugin marketplace catalog for this repository.
+This folder contains the Claude plugin marketplace catalog for this repo.
 
 - `marketplace.json` exposes the shared Canva plugin package at
   `./plugins/canva` from the repository root.
@@ -12,7 +12,7 @@ This folder contains the Claude plugin marketplace catalog for this repository.
 Install from GitHub with:
 
 ```bash
-/plugin marketplace add canva-sdks/canva-claude-skills
+/plugin marketplace add canva-sdks/canva-skills
 /plugin install canva@canva-skills
 ```
 
@@ -22,10 +22,8 @@ If you already added this marketplace before, refresh it instead:
 /plugin marketplace update canva-skills
 ```
 
-Then sign in to Canva when prompted and use the skills (e.g. "resize design
-DAB... for all social media platforms").
+Then connect the Canva MCP server and sign in when prompted. Use the skills
+naturally (e.g. "resize design DAB... for all social media platforms").
 
-Cursor and Codex use their own host entrypoints, but they point at the same
-shared Canva plugin package.
-
-See the repository root `README.md` for the full multi-host setup.
+This works in Claude Code, Claude Desktop, and other Claude clients that support
+plugin marketplaces.
