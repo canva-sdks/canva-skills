@@ -1,0 +1,13 @@
+{
+  "name": "canva-skills",
+  "version": "1.0.0",
+  "description": "Agent skills for working with Canva designs — for Claude, Cursor, Codex, and the Canva MCP worker.",
+  "license": "MIT",
+  "files": [
+    "plugins/canva/skills"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/canva-sdks/canva-skills.git"
+  }
+}
