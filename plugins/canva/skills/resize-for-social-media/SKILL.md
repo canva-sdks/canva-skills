@@ -26,12 +26,12 @@ Determine which Canva design the user wants to resize. This can be provided in t
 
 1. **Direct design ID**: User provides a design ID (starts with "D")
    - Example: "resize design DABcd1234ef for all social media"
-   - Use the design ID directly with `get-design` tool to retrieve design information
+   - Use the design ID directly with `read-design` to retrieve design information
    
 2. **Direct design URL**: User provides a Canva design link
    - Example: "resize https://www.canva.com/design/DABcd1234ef/... for all social media"
    - Extract the design ID from the URL (the part after `/design/` and before the next `/` or query parameter)
-   - Use the extracted design ID with `get-design` tool
+   - Use the extracted design ID with `read-design`
    
 3. **Search by design name**: Use `search-designs` tool with the design name as the query
    - Example: "resize my Demo Brand Template: Brix&Hart Flyer design for all social media"
@@ -44,7 +44,7 @@ Determine which Canva design the user wants to resize. This can be provided in t
 
 ### Step 2: Retrieve Source Design Information
 
-Use the `get-design` tool with the design ID to:
+Use `Canva:read-design` with the design ID (default fields, which include `design_metadata`) to:
 - Confirm the design exists and is accessible
 - Get the design title (for naming resized versions)
 - Verify design type compatibility

@@ -11,24 +11,22 @@ A deck has been out for review — stakeholders have left comments scattered acr
 
 Before triaging feedback, you MUST know these constraints. This avoids wasted back-and-forth with the user on changes that are impossible via the API.
 
-### What the API CAN do (via `perform-editing-operations`)
+### What the API CAN do (via `edit-design`)
 
-- **Text content**: replace entire text elements (`replace_text`), find-and-replace substrings (`find_and_replace_text`)
-- **Text formatting**: font size, font weight (bold), font style (italic), text color, text alignment, line height, text decoration (underline), strikethrough, links, list formatting
-- **Media**: replace images/videos (`update_fill`), insert new images/videos (`insert_fill`), delete elements (`delete_element`)
-- **Layout**: reposition elements (`position_element`), resize elements (`resize_element`)
+- **Text content**: replace entire text elements (`replace_text`), find-and-replace substrings (`find_and_replace_text`), add new text elements (`add_text`)
+- **Text formatting**: font size, font weight (bold), font style (italic), text color, text alignment, line height, text decoration (underline), strikethrough, links, list formatting, text anchoring
+- **Media**: replace images/videos (`update_fill`), insert new images/videos (`insert_fill`), delete elements (`delete_element`), flip/crop media
+- **Shapes & lines**: insert/replace shapes, recolor elements, stroke and line properties
+- **Layout**: reposition elements (`position_element`), resize elements (`resize_element`), rotate, layer front/back, group/ungroup, opacity
+- **Pages**: add a page (`add_page`), reorder pages (`reorder_page`), speaker notes
 - **Metadata**: update design title (`update_title`)
 
 ### What the API CANNOT do
 
 - Change font family/typeface — only size, weight, and style are supported
-- Add new text elements — you can only insert media (images/videos), not new text boxes
-- Change background colors or gradients
-- Add, remove, or reorder pages/slides
+- Change the background color/gradient of an **existing** page (a newly-added page can specify one)
+- Delete a page
 - Modify animations or transitions
-- Change element opacity (except on newly inserted fills)
-- Group/ungroup elements
-- Modify shapes (color, border, etc.) — only text within shapes can be edited
 
 ### Triage rule
 
@@ -47,14 +45,14 @@ When a comment requests something in the "CANNOT do" list, classify it as **Requ
 
 - Call `Canva:list-comments` with the design ID to get every comment thread
 - For each thread with replies, call `Canva:list-replies` to capture the full conversation
-- Call `Canva:get-design-content` to read the current text on every page
+- Call `Canva:read-design` (default fields include `design_content`) to read the current text on every page
 
 ### Step 3: Triage the Feedback
 
 Classify each comment thread into one of these categories:
 
 - **Actionable** — a change that the API supports and you can reasonably interpret. Use your best judgement — if a comment says "make the title punchier", rewrite it to be punchier rather than flagging it as ambiguous. If a comment says "fix the spacing", look at the design content and make a reasonable adjustment. Only escalate to the user when you genuinely cannot determine what the reviewer intends (e.g., two reviewers directly contradict each other, or a comment references something you can't find in the design).
-- **Requires manual action** — the reviewer wants something the API cannot do (font family change, new text element, background change, page reorder, etc.). Note these briefly in the summary — full details go in the manual changes checklist (Step 7).
+- **Requires manual action** — the reviewer wants something the API cannot do (font family change, background change on an existing page, page deletion, etc.). Note these briefly in the summary — full details go in the manual changes checklist (Step 7).
 - **Resolved** — already addressed, explicitly marked done, or is a positive acknowledgement (e.g., "LGTM", "looks good")
 
 Present a summary to the user organised by category: what you plan to change, what needs clarification, what must be done manually, and what you're skipping.
@@ -70,10 +68,10 @@ Present a summary to the user organised by category: what you plan to change, wh
 
 **Do NOT ask the user again.** They already approved. Execute all of these in sequence immediately:
 
-- Call `Canva:start-editing-transaction` to begin an editing session
-- Call `Canva:perform-editing-operations` to make each approved change (batch all operations in a single call where possible)
-- Call `Canva:commit-editing-transaction` to save — do NOT ask "shall I commit?" or "ready to save?"
-- Show the thumbnail from the editing response to the user as confirmation
+- Call `Canva:read-design` with `open_transaction: true` to begin an editing session — remember the returned `transaction_id`
+- For each page that needs changes, call `Canva:edit-design` with `transaction_id`, `page_index`, and that page's `operations` (`finalize` left at its default, `'keep_open'`) — batch all operations for one page into a single call; a separate call is needed per page, since one `edit-design` call can only target one page
+- After all pages are edited, call `Canva:edit-design` with `transaction_id`, `finalize: 'commit'`, and `operations` omitted — do NOT ask "shall I commit?" or "ready to save?"
+- Show the thumbnails from the edit responses to the user as confirmation
 
 ### Step 7: Present Remaining Manual Changes
 
@@ -86,9 +84,9 @@ After committing (or if no API-supported changes were possible), present a clear
    Reviewer: @Sarah | Why: API cannot change font family
    → Open slide 3, select the heading, change font to Montserrat
 
-2. **Slide 7 — Add a new text box for the disclaimer**
-   Reviewer: @James | Why: API cannot add new text elements
-   → Add a text box below the chart with: "Source: Q3 2025 internal data"
+2. **Slide 7 — Change the background to the new brand teal**
+   Reviewer: @James | Why: API cannot change an existing page's background
+   → Open slide 7, update the background color to match the brand kit
 
 3. ...
 ```
@@ -109,4 +107,4 @@ Include the slide number, what to change, who requested it, and step-by-step ins
 - Show the summary of planned changes and wait for approval ONCE — after that, execute everything without further confirmation
 - NEVER ask "shall I commit?", "ready to save?", or any variation — the user's initial approval covers the entire edit-and-commit flow
 - Manual changes are normal and expected — don't over-explain or apologise for API limitations, just include them in the checklist
-- Batch operations: use a single `perform-editing-operations` call with multiple operations rather than one call per change
+- Batch operations: use a single `edit-design` call per page with multiple operations rather than one call per change; use a separate call for each page that needs edits
