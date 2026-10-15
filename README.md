@@ -182,6 +182,14 @@ Codex uses `.agents/plugins/marketplace.json` to find the package at
 metadata, `plugins/canva/.mcp.json` for the Canva MCP server, and
 `plugins/canva/skills/` for the active skill set.
 
+### Neotask
+
+Install from [Neotask Construct](https://construct.neotask.ai/p/canva):
+
+```bash
+neotask construct install canva
+```
+
 ## Usage
 
 Simply reference the skills naturally in your conversations:
@@ -208,7 +216,7 @@ Simply reference the skills naturally in your conversations:
 "Check this Canva design against my brand kit"
 ```
 
-Works in Claude, Cursor, and Codex.
+Works in Claude, Cursor, Codex, and Neotask.
 
 ## Repository Structure
 
