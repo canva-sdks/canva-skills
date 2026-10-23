@@ -4,9 +4,9 @@ This folder contains the Antigravity plugin marketplace catalog for this repo.
 
 - `marketplace.json` exposes the shared Canva plugin package at
   `./plugins/canva` from the repository root.
-- The installable package contains its Claude plugin manifest at
+- The installable package contains its Antigravity plugin manifest at
   `plugins/canva/plugin.json`.
-- The Claude manifest registers the active shared skills from
+- The Antigravity manifest registers the active shared skills from
   `plugins/canva/skills/`.
 
 Install from GitHub with:
