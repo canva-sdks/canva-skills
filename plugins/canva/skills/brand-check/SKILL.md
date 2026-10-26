@@ -18,12 +18,12 @@ Never invent brand colors or fonts. If you don't have the real values, say so.
 
 ## Reading the design's actual colors and fonts
 
-`Canva:get-design-content` returns text only — not colors or fonts.
+`Canva:read-design` (plain read, default fields) returns text only — not colors or fonts.
 
-- A **read-only** editing transaction (`Canva:start-editing-transaction` → inspect → `Canva:cancel-editing-transaction`, always cancel) reliably gives element **text, positions, and sizes**.
-- **Colors and fonts are NOT reliably exposed** by the transaction — tested: it often returns only text + position + dimension, with no color/font attributes. So the **thumbnail is your primary evidence** for color and typography. Use any style data the payload happens to include, but never assert a design's hex or font as fact unless it was actually in the payload.
+- **`Canva:read-design` with `open_transaction: true`** (`filter: { fields: ['design_content'] }`) returns the full CDF as markdown — element text, positions, sizes, geometry, element types, backgrounds, strokes, and opacity are all visible here. This is a real upgrade over the old text-only model; use it for layout/spacing/alignment detail. Close the transaction afterwards with `Canva:edit-design` (`transaction_id`, `finalize: 'cancel'`) — **never commit**, since this skill makes no changes.
+- **Precise text color/font values are still not guaranteed** in the CDF payload. So the **thumbnail is your primary evidence** for color and typography judgement — use `Canva:read-design` with `filter: { fields: ['thumbnails'] }`. Use any style data the CDF happens to include, but never assert a design's hex or font as fact unless it was actually in the payload.
 
-Because both the brand kit (see the gap above) AND the design itself frequently lack machine-readable colors/fonts, brand-check is often a **visual** comparison (design thumbnail vs. brand-kit thumbnail) plus the user-supplied palette/fonts. Use `Canva:get-design-thumbnail` for logo placement and overall visual tone.
+Because both the brand kit (see the gap above) AND the design itself frequently lack machine-readable colors/fonts, brand-check is often a **visual** comparison (design thumbnail vs. brand-kit thumbnail) plus the user-supplied palette/fonts.
 
 ## Workflow
 
@@ -36,8 +36,8 @@ Short link → `Canva:resolve-shortlink`; full URL → extract ID; raw `D...` ID
 - Apply the data-gap handling above. If scopes are missing (e.g. "Missing scopes: [brandkit:read]"), tell the user to disconnect and reconnect the Canva connector to refresh the token.
 
 ### Step 3: Read the design
-- `Canva:get-design-thumbnail` for visual/logo/tone.
-- Read-only transaction (start → inspect → cancel) for the actual colors and fonts in use.
+- `Canva:read-design` with `filter: { fields: ['thumbnails'] }` for visual/logo/tone.
+- `Canva:read-design` with `open_transaction: true` (as described above) for the actual colors and fonts in use; close it with `finalize: 'cancel'` when done.
 
 ### Step 4: Compare against the brand
 Check each dimension and mark **On brand / Off brand / Can't verify**:
@@ -69,10 +69,10 @@ Overall: ⚠️ Mostly on brand, 3 issues
 ```
 
 ### Step 6: Offer to fix
-Offer to correct the API-fixable issues via **`canva-edit-design`** — note that the API can change **text color** and font **size/weight/style**, but CANNOT change font **family** or background colors (those are manual in Canva; see `canva-edit-design`).
+Offer to correct the API-fixable issues via **`canva-edit-design`** — note that the API can change **text color** and font **size/weight/style**, but CANNOT change font **family** or an existing page's **background** (those are manual in Canva; see `canva-edit-design`).
 
 ## Rules
-- Read-only: always `cancel-editing-transaction` after inspecting. Never commit.
+- Read-only: always close with `edit-design` (`finalize: 'cancel'`) after inspecting. Never commit.
 - Never fabricate brand values — use the kit's real data or what the user provides, otherwise mark **Can't verify**.
 - Always name the specific page/element and the offending value vs. the brand value.
 - Distinguish hard violations (wrong logo, off-palette color) from soft ones (slightly inconsistent spacing).
