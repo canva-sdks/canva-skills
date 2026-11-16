@@ -28,6 +28,7 @@
     "skills": [
         "./skills/resize-for-social-media",
         "./skills/bulk-create",
+        "./skills/canva-autofill",
         "./skills/implement-feedback",
         "./skills/edit-design",
         "./skills/get-design-feedback",
