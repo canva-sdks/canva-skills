@@ -1,5 +1,5 @@
 {
-    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
     "name": "canva",
     "displayName": "Canva",
     "version": "1.0.0",
