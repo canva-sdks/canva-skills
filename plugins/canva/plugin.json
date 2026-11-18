@@ -27,14 +27,13 @@
         "marketing"
     ],
     "skills": [
-        "./skills/canva-agent-guide",
-        "./skills/resize-for-social-media",
-        "./skills/bulk-create",
-        "./skills/implement-feedback",
-        "./skills/edit-design",
-        "./skills/get-design-feedback",
-        "./skills/brand-check",
-        "./skills/cli"
+        "./skills/canva-resize-for-social-media",
+        "./skills/canva-bulk-create",
+        "./skills/canva-implement-feedback",
+        "./skills/canva-edit-design",
+        "./skills/canva-design-feedback",
+        "./skills/canva-brand-check",
+        "./skills/canva-cli"
     ],
     "homepage": "https://www.canva.com/developers/",
     "repository": "https://github.com/canva-sdks/canva-skills"
