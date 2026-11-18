@@ -209,6 +209,10 @@ Simply reference the skills naturally in your conversations:
 **Examples:**
 
 ```
+# Agent guide
+"Which Canva tool should I use to turn this outline into a deck?"
+"Help me write a new Canva skill for monthly report designs"
+
 # Social media resize
 "Resize design DABcd1234ef for all social media platforms"
 
