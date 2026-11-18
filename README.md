@@ -60,6 +60,20 @@ Bulk-create Canva designs from tabular data using a brand template, one design p
 - Creates one design per row with `autofill-design` (text, image, and chart fields where supported)
 - Requires Canva Enterprise for autofill
 
+### canva-autofill
+
+Populate Canva Brand Templates (or existing designs) with structured data through the Canva autofill flow.
+
+**Use when:** You have a template with data fields and want on-brand output from data — a single filled design, one design per record, or a refresh of an existing design.
+
+**Capabilities:**
+
+- Reads the template's field schema before filling and maps data to exact field names
+- Fills text, image, video, and chart fields; uploads local or remote media first and passes asset IDs
+- Creates one design per record from tabular data, titling each from a distinguishing value
+- Leaves missing data unfilled and reports placeholder fields rather than inventing content
+- Explains when a template has no data fields and offers setup or alternatives
+
 ### canva-implement-feedback
 
 Implement reviewer feedback on a Canva design: read comment threads and apply the changes the API supports.
@@ -219,6 +233,9 @@ Simply reference the skills naturally in your conversations:
 # Bulk create
 "Bulk create designs from this spreadsheet using my brand template"
 
+# Autofill
+"Fill our sales pitch template with this account's numbers"
+
 # Implement feedback
 "Implement the feedback on my deck"
 
@@ -262,6 +279,7 @@ canva-skills/
         ├── .cursor/                      # Cursor project config when opening package directly
         ├── .mcp.json                     # MCP registration for Cursor marketplace and Codex
         ├── skills/                       # Active plugin skills exposed by all hosts
+        │   ├── canva-autofill/
         │   ├── canva-brand-check/
         │   ├── canva-bulk-create/
         │   ├── canva-edit-design/
