@@ -35,7 +35,7 @@ Each host entrypoint folder has a small README with setup notes for that host.
 These skills are exposed by every supported host through the shared
 `plugins/canva/skills/` directory.
 
-### resize-for-social-media
+### canva-resize-for-social-media
 
 Resize designs for multiple social media platforms (Facebook, Instagram, LinkedIn) in one operation.
 
@@ -47,7 +47,7 @@ Resize designs for multiple social media platforms (Facebook, Instagram, LinkedI
 - Provides Canva edit links so users can download or refine each version
 - Resizes selected formats in parallel
 
-### bulk-create
+### canva-bulk-create
 
 Bulk-create Canva designs from tabular data using a brand template, one design per row.
 
@@ -74,7 +74,7 @@ Populate Canva Brand Templates (or existing designs) with structured data throug
 - Leaves missing data unfilled and reports placeholder fields rather than inventing content
 - Explains when a template has no data fields and offers setup or alternatives
 
-### implement-feedback
+### canva-implement-feedback
 
 Implement reviewer feedback on a Canva design: read comment threads and apply the changes the API supports.
 
@@ -88,7 +88,7 @@ Implement reviewer feedback on a Canva design: read comment threads and apply th
 - Presents a checklist of remaining manual changes with step-by-step instructions
 - Replies to comment threads after changes are made
 
-### edit-design
+### canva-edit-design
 
 Make safe, approval-gated edits to an existing Canva design.
 
@@ -101,7 +101,7 @@ Make safe, approval-gated edits to an existing Canva design.
 - Replaces, inserts, deletes, repositions, or resizes supported media and elements
 - Clearly flags changes that the Canva API cannot perform
 
-### get-design-feedback
+### canva-design-feedback
 
 Read a Canva design and return structured, actionable design feedback.
 
@@ -114,7 +114,7 @@ Read a Canva design and return structured, actionable design feedback.
 - Prioritizes page-specific findings with concrete fixes
 - Never edits or commits changes
 
-### brand-check
+### canva-brand-check
 
 Check a Canva design against a brand kit and report where it diverges.
 
@@ -125,7 +125,7 @@ Check a Canva design against a brand kit and report where it diverges.
 - Lists available brand kits and compares against the selected kit
 - Uses design and brand-kit thumbnails when exact colors or fonts are not available from the API
 - Marks findings as on brand, off brand, or can't verify
-- Offers to hand off fixable items to `edit-design` if the user wants changes made
+- Offers to hand off fixable items to `canva-edit-design` if the user wants changes made
 
 ## Inactive Skills
 
@@ -223,6 +223,10 @@ Simply reference the skills naturally in your conversations:
 **Examples:**
 
 ```
+# Agent guide
+"Which Canva tool should I use to turn this outline into a deck?"
+"Help me write a new Canva skill for monthly report designs"
+
 # Social media resize
 "Resize design DABcd1234ef for all social media platforms"
 
@@ -275,13 +279,13 @@ canva-skills/
         ├── .cursor/                      # Cursor project config when opening package directly
         ├── .mcp.json                     # MCP registration for Cursor marketplace and Codex
         ├── skills/                       # Active plugin skills exposed by all hosts
-        │   ├── brand-check/
-        │   ├── bulk-create/
         │   ├── canva-autofill/
-        │   ├── edit-design/
-        │   ├── get-design-feedback/
-        │   ├── implement-feedback/
-        │   └── resize-for-social-media/
+        │   ├── canva-brand-check/
+        │   ├── canva-bulk-create/
+        │   ├── canva-edit-design/
+        │   ├── canva-design-feedback/
+        │   ├── canva-implement-feedback/
+        │   └── canva-resize-for-social-media/
         └── inactive-skills/              # Kept in repo, not registered by plugin hosts
             ├── branded-presentation/
             ├── classroom-helper/

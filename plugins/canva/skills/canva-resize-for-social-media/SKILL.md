@@ -45,9 +45,10 @@ Determine which Canva design the user wants to resize. This can be provided in t
 
 ### Step 2: Retrieve Source Design Information
 
-Use the `get-design` tool with the design ID or design share URL to:
-- Confirm the design exists and is accessible
-- Verify design type compatibility
+Confirm the design exists and is accessible before resizing. Use `get-design` with the design ID or share URL. Some hosts expose this as `read-design` instead (same inputs; request `design_metadata` only). Use whichever is available.
+
+- If neither is available, skip this check and go straight to resizing. The resize call fails with a clear error if the design isn't reachable, so the check is a convenience, not a requirement.
+- If the check returns permission denied, stop and tell the user the connected Canva account can't access the design (it may be owned by another account or view-only). Ask for a copy or edit access. Don't attempt to resize.
 
 ### Step 3: Resolve Target Placements and Canvases
 
@@ -110,7 +111,8 @@ Provide the user with a summary including:
 
 ## Key Implementation Notes
 
-- **Compatibility**: Check if `resize-design` is available in the current MCP tools. If not, inform the user that this skill requires the Canva MCP resize tool in the current host
+- **Compatibility**: Check if `resize-design` is available in the current MCP tools. If it is deferred, search for it by name before concluding it's missing. If it's truly unavailable, inform the user that this skill requires the Canva MCP resize tool in the current host and stop. This is the only tool the skill can't work without
+- **Name search limits**: `search-designs` may only filter by some design types. If a name search finds nothing, ask the user for the design link instead of guessing
 - **Parallel execution**: Resize operations should be performed in parallel for efficiency
 - **Error resilience**: If any operation fails, complete the remaining operations and clearly report what succeeded/failed
 - **User confirmation**: Do not require user approval between steps - execute the full workflow automatically unless errors occur

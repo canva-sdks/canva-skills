@@ -1,5 +1,5 @@
 {
-    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
     "name": "canva",
     "displayName": "Canva",
     "version": "1.0.0",
@@ -8,7 +8,8 @@
     "suggestedPrompts": [
         "Resize this Canva design for Instagram and LinkedIn",
         "Review this Canva design and suggest improvements",
-        "Check this Canva design against my brand kit"
+        "Check this Canva design against my brand kit",
+        "Help me pick the right Canva tool or skill for my task"
     ],
     "author": {
         "name": "Canva"
@@ -26,14 +27,14 @@
         "marketing"
     ],
     "skills": [
-        "./skills/resize-for-social-media",
-        "./skills/bulk-create",
+        "./skills/canva-resize-for-social-media",
+        "./skills/canva-bulk-create",
         "./skills/canva-autofill",
-        "./skills/implement-feedback",
-        "./skills/edit-design",
-        "./skills/get-design-feedback",
-        "./skills/brand-check",
-        "./skills/cli"
+        "./skills/canva-implement-feedback",
+        "./skills/canva-edit-design",
+        "./skills/canva-design-feedback",
+        "./skills/canva-brand-check",
+        "./skills/canva-cli"
     ],
     "homepage": "https://www.canva.com/developers/",
     "repository": "https://github.com/canva-sdks/canva-skills"
