@@ -35,6 +35,19 @@ Each host entrypoint folder has a small README with setup notes for that host.
 These skills are exposed by every supported host through the shared
 `plugins/canva/skills/` directory.
 
+### canva-agent-guide
+
+Start-here guide for any Canva task: how to discover the Canva MCP tools and skills available in a session, which tool fits which job, and how to write a new Canva skill.
+
+**Use when:** You want to create, edit, review, resize, import, export, or bulk-produce a design but it's unclear which Canva tool or skill applies, or you want to build a new Canva skill.
+
+**Capabilities:**
+
+- Discovers the Canva MCP tools and skills available in the current session
+- Maps design jobs to the right tool or skill
+- Describes the shape every multi-step Canva workflow follows
+- Explains how to author a new Canva skill
+
 ### resize-for-social-media
 
 Resize designs for multiple social media platforms (Facebook, Instagram, LinkedIn) in one operation.
@@ -209,6 +222,10 @@ Simply reference the skills naturally in your conversations:
 **Examples:**
 
 ```
+# Agent guide
+"Which Canva tool should I use to turn this outline into a deck?"
+"Help me write a new Canva skill for monthly report designs"
+
 # Social media resize
 "Resize design DABcd1234ef for all social media platforms"
 
@@ -260,6 +277,7 @@ canva-skills/
         ├── skills/                       # Active plugin skills exposed by all hosts
         │   ├── brand-check/
         │   ├── bulk-create/
+        │   ├── canva-agent-guide/
         │   ├── edit-design/
         │   ├── get-design-feedback/
         │   ├── implement-feedback/

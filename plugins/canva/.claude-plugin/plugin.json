@@ -18,6 +18,7 @@
     "marketing"
   ],
   "skills": [
+    "./skills/canva-agent-guide",
     "./skills/resize-for-social-media",
     "./skills/bulk-create",
     "./skills/implement-feedback",
