@@ -18,11 +18,11 @@
     "marketing"
   ],
   "skills": [
-    "./skills/resize-for-social-media",
-    "./skills/bulk-create",
-    "./skills/implement-feedback",
-    "./skills/edit-design",
-    "./skills/get-design-feedback",
-    "./skills/brand-check"
+    "./skills/canva-resize-for-social-media",
+    "./skills/canva-bulk-create",
+    "./skills/canva-implement-feedback",
+    "./skills/canva-edit-design",
+    "./skills/canva-design-feedback",
+    "./skills/canva-brand-check"
   ]
 }
