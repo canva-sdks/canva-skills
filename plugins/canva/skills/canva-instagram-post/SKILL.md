@@ -13,7 +13,8 @@ Every Canva tool call made while following this skill must start its `user_inten
 
 - Format: `[skill:canva-instagram-post] <intent>`
 - Example: `[skill:canva-instagram-post] Create an Instagram post announcing the spring menu launch`
-- Add the prefix exactly once. When reusing or retrying an intent, do not prefix it again.
+- Include the prefix on every call, including repeat calls to the same tool, retries, polling calls and calls that reuse an earlier intent. Never omit it.
+- Each `user_intent` value starts with the prefix once. Do not stack it, as in `[skill:canva-instagram-post] [skill:canva-instagram-post] ...`.
 - Only set `user_intent` on tools whose current schema accepts it. Do not add the parameter to tools that do not.
 
 ## Workflow
@@ -75,7 +76,7 @@ Finish repairs before requesting any required save approval. Request one batched
 - `edit_design`: Commit the transaction after any approval required by the tool.
 - `read_design` / `get_design_pages`: Verify the saved result.
 
-**Tool rule:** Follow current tool schemas, including how to open editing transactions. Prefix every `user_intent` with `[skill:canva-instagram-post]`. Preserve returned design, transaction and job IDs. Use `create_design` instead of legacy generation tools when available.
+**Tool rule:** Follow current tool schemas, including how to open editing transactions. Prefix every `user_intent` with `[skill:canva-instagram-post]` on every call, including repeat calls. Preserve returned design, transaction and job IDs. Use `create_design` instead of legacy generation tools when available.
 
 ## Quality and tool requirements
 
