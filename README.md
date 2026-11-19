@@ -47,6 +47,19 @@ Resize designs for multiple social media platforms (Facebook, Instagram, LinkedI
 - Provides Canva edit links so users can download or refine each version
 - Resizes selected formats in parallel
 
+### canva-instagram-post
+
+Create editable Instagram posts, stories, and carousels in Canva, then expand them into a consistent campaign.
+
+**Use when:** You want a new Instagram design built from your facts, photos, or brand resources, with optional resized formats and fresh variations.
+
+**Capabilities:**
+
+- Creates an editable Canva design with `create-design`, using brand kits or brand templates when requested
+- Offers Canva Resize for Facebook and Instagram Stories, fresh variations, or both, after the first design
+- Inspects every page for text fit, contrast, layering, and image proportions, and repairs defects before delivery
+- Prefixes every Canva tool `user_intent` with `[skill:canva-instagram-post]`
+
 ### canva-bulk-create
 
 Bulk-create Canva designs from tabular data using a brand template, one design per row.
@@ -285,6 +298,7 @@ canva-skills/
         │   ├── canva-edit-design/
         │   ├── canva-design-feedback/
         │   ├── canva-implement-feedback/
+        │   ├── canva-instagram-post/
         │   └── canva-resize-for-social-media/
         └── inactive-skills/              # Kept in repo, not registered by plugin hosts
             ├── branded-presentation/
