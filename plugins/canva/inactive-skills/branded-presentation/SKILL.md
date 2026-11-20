@@ -59,4 +59,4 @@ For each slide include:
 - If the outline is sparse, expand it into a complete slide plan with reasonable content
 - For briefs (narrative descriptions), extract key points and structure them into slides
 - Aim for clear, action-oriented slide titles
-- Autofill requires a Canva Enterprise plan
+- Autofill is available on all paid Canva plans

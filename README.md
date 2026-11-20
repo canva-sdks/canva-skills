@@ -71,7 +71,7 @@ Bulk-create Canva designs from tabular data using a brand template, one design p
 - Accepts tabular data from uploaded files, pasted content, or URLs
 - Finds brand templates that support autofill and maps columns to template fields
 - Creates one design per row with `autofill-design` (text, image, and chart fields where supported)
-- Requires Canva Enterprise for autofill
+- Autofill is available on all paid Canva plans
 
 ### canva-autofill
 

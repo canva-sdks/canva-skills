@@ -114,7 +114,7 @@ Offer to save a summary CSV with columns: `row`, `status`, `design_url`, `error`
 
 ## Notes
 
-- Autofill requires a Canva Enterprise plan.
+- Autofill is available on all paid Canva plans.
 - For large CSVs (50+ rows), warn the user upfront that this will make N API calls and may take a while. Offer to do a test run on the first 3 rows before proceeding with the full batch.
 - If some rows fail, continue with the rest — don't abort the whole batch.
 - Skip rows where all mapped fields are empty and warn the user about them.

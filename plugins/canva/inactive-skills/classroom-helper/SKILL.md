@@ -92,4 +92,4 @@ Briefly warn that **auto-generated lesson visuals are drafts**, not guaranteed a
 ## Notes
 
 - Same tool chain as branded presentation skills: brand kit + `generate-design` + `create-design-from-candidate`
-- **Autofill** and advanced generation features may require a **Canva Enterprise** plan — if tools error, explain briefly and suggest manual edits in Canva
+- **Autofill** and advanced generation features may require a **paid Canva plan** — if tools error, explain briefly and suggest manual edits in Canva
