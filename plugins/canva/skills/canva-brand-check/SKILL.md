@@ -18,12 +18,12 @@ Never invent brand colors or fonts. If you don't have the real values, say so.
 
 ## Reading the design's actual colors and fonts
 
-`Canva:get-design-content` returns text only — not colors or fonts.
+`Canva:read-design` returns text, metadata, and thumbnails — not reliable colors or fonts.
 
-- A **read-only** editing transaction (`Canva:start-editing-transaction` → inspect → `Canva:cancel-editing-transaction`, always cancel) reliably gives element **text, positions, and sizes**.
-- **Colors and fonts are NOT reliably exposed** by the transaction — tested: it often returns only text + position + dimension, with no color/font attributes. So the **thumbnail is your primary evidence** for color and typography. Use any style data the payload happens to include, but never assert a design's hex or font as fact unless it was actually in the payload.
+- A **read-only** editing transaction (`Canva:read-design` with `open_transaction: true` → inspect → `Canva:edit-design` with `finalize: "cancel"`, always cancel) gives element **text, positions, and sizes**.
+- **Colors and fonts are NOT reliably exposed** by the payload — it often returns only text + position + dimension, with no color/font attributes. So the **thumbnail is your primary evidence** for color and typography. Use any style data the payload happens to include, but never assert a design's hex or font as fact unless it was actually in the payload.
 
-Because both the brand kit (see the gap above) AND the design itself frequently lack machine-readable colors/fonts, brand-check is often a **visual** comparison (design thumbnail vs. brand-kit thumbnail) plus the user-supplied palette/fonts. Use `Canva:get-design-thumbnail` for logo placement and overall visual tone.
+Because both the brand kit (see the gap above) AND the design itself frequently lack machine-readable colors/fonts, brand-check is often a **visual** comparison (design thumbnail vs. brand-kit thumbnail) plus the user-supplied palette/fonts. Use the `thumbnails` field of `Canva:read-design` for logo placement and overall visual tone.
 
 ## Workflow
 
@@ -36,8 +36,8 @@ Short link → `Canva:resolve-shortlink`; full URL → extract ID; raw `D...` ID
 - Apply the data-gap handling above. If scopes are missing (e.g. "Missing scopes: [brandkit:read]"), tell the user to disconnect and reconnect the Canva connector to refresh the token.
 
 ### Step 3: Read the design
-- `Canva:get-design-thumbnail` for visual/logo/tone.
-- Read-only transaction (start → inspect → cancel) for the actual colors and fonts in use.
+- `Canva:read-design` with `thumbnails` for visual/logo/tone.
+- Read-only transaction (open → inspect → cancel) for the actual colors and fonts in use.
 
 ### Step 4: Compare against the brand
 Check each dimension and mark **On brand / Off brand / Can't verify**:
@@ -69,10 +69,10 @@ Overall: ⚠️ Mostly on brand, 3 issues
 ```
 
 ### Step 6: Offer to fix
-Offer to correct the API-fixable issues via **`canva-edit-design`** — note that the API can change **text color** and font **size/weight/style**, but CANNOT change font **family** or background colors (those are manual in Canva; see `canva-edit-design`).
+Offer to correct the API-fixable issues via **`canva-edit-design`** — note that the API can change **text color** and font **size/weight/style**, but CANNOT change font **family** (that is manual in Canva; see `canva-edit-design`).
 
 ## Rules
-- Read-only: always `cancel-editing-transaction` after inspecting. Never commit.
+- Read-only: always cancel the transaction (`edit-design` with `finalize: "cancel"`) after inspecting. Never commit.
 - Never fabricate brand values — use the kit's real data or what the user provides, otherwise mark **Can't verify**.
 - Always name the specific page/element and the offending value vs. the brand value.
 - Distinguish hard violations (wrong logo, off-palette color) from soft ones (slightly inconsistent spacing).

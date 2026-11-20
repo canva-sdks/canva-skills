@@ -5,45 +5,45 @@ description: Make edits to an existing Canva design — change or fix text, repl
 
 # Canva Design Editing
 
-The canonical, safe way to apply edits to an existing Canva design. Every Canva skill that mutates a design should follow this exact protocol: **start a transaction → perform operations → commit (with approval)**. Changes are draft-only until committed and are PERMANENTLY LOST if not committed.
+The canonical, safe way to apply edits to an existing Canva design. Every Canva skill that mutates a design should follow this exact protocol: **open a transaction → apply operations → commit (with approval)**. Changes are draft-only until committed and are PERMANENTLY LOST if not committed.
 
 ## The Transaction Protocol (always these steps, in order)
 
-1. **`Canva:start-editing-transaction`** — pass the `design_id`. Remember the returned `transaction_id` and the `pages` array; both are required by later calls. ALWAYS show the user the thumbnail(s) returned here.
-2. **`Canva:perform-editing-operations`** — apply edits. Pass the `transaction_id`, the `pages` array from the previous response, the `page_index` of the first page being changed, and an `operations` array. Batch multiple operations into a single call wherever possible.
-3. **`Canva:commit-editing-transaction`** — save. See the approval gate below. After committing, the `transaction_id` is invalid; a new edit needs a new transaction.
-4. **`Canva:cancel-editing-transaction`** — discard the draft instead of saving (e.g. the user rejects the preview, or you opened a transaction only to inspect the design).
+1. **`Canva:read-design`** — pass the `design_id` with `open_transaction: true` and `filter.fields` including `"thumbnails"` and `"design_content"` (thumbnails default to page 1 only, so set `filter.thumbnail_pages` for other pages). Remember the returned `transaction_id`; it is required by later calls. Use the returned `design_content` to find the `locator_id` of each element to edit (and the page IDs needed by `page_id` operations such as `add_text`, `insert_fill` and `insert_shape`), and note each page's `type` and `isEditable` values. ALWAYS show the user the thumbnail(s) returned here.
+2. **`Canva:edit-design`** — apply edits with `finalize: "keep_open"`. Pass the `transaction_id`, the one-based `page_index` of the page being changed, and an `operations` array. Batch multiple operations for the same page into a single call wherever possible; edits to a different page need a separate call. Set `is_responsive` (true when the page's `type` is `"responsive"`) and `is_editable` (from the page's `isEditable`) from the `read-design` page data. If `is_editable` is false, no operations are applied.
+3. **`Canva:edit-design`** with `finalize: "commit"` and **no** `operations` — save. See the approval gate below. After committing, the `transaction_id` is invalid; a new edit needs a new transaction.
+4. **`Canva:edit-design`** with `finalize: "cancel"` and **no** `operations` — discard the draft instead of saving (e.g. the user rejects the preview, or you opened a transaction only to inspect the design).
+
+To preview unsaved edits, call `Canva:read-design` again with the `transaction_id` and `"thumbnails"` in `filter.fields`.
 
 ## Capabilities — what the API CAN and CANNOT do
 
-### CAN (operations on `perform-editing-operations`)
-- **Text content**: `replace_text` (whole element), `find_and_replace_text` (substring)
-- **Text formatting** (`format_text`): font size, weight (normal/bold), style (normal/italic), color, alignment, line height, underline, strikethrough, links, list level/marker
-- **Media**: `update_fill` (replace image/video), `insert_fill` (add image/video), `delete_element`
-- **Layout**: `position_element`, `resize_element`
+### CAN (operations on `edit-design`)
+- **Text content**: `replace_text` (whole element), `find_and_replace_text` (substring), `add_text` (new text box)
+- **Text formatting** (`format_text`): font size, weight (normal/bold), style (normal/italic), color, alignment, line height, underline, strikethrough, links, list level/marker; `update_text_anchoring`
+- **Media**: `update_fill` (replace image/video), `insert_fill` (add image/video), `delete_element`, `crop_media`, `flip_media`
+- **Layout**: `position_element`, `resize_element`, `rotate_element`, `layer_element`, `group_elements`, `ungroup_elements`
+- **Shapes and color**: `insert_shape`, `replace_shape`, `recolor_element`, `update_opacity`, `update_stroke_properties`, `update_line_properties`
+- **Pages**: `add_page`, `reorder_page`, `replace_speaker_notes`
 - **Metadata**: `update_title`
 - **Autofill mapping**: `update_autofill_field` (fixed-page designs only)
 
 ### CANNOT
 - Change font **family/typeface** (only size, weight, style)
-- Add **new text elements** (you can only insert media, not new text boxes)
-- Change background colors or gradients
-- Add, remove, or reorder pages/slides
-- Modify animations, transitions, or element opacity (except on newly inserted fills)
-- Group/ungroup elements, or restyle shapes (only text inside shapes is editable)
+- Modify animations or transitions
 
-When a requested change is in the CANNOT list, tell the user it must be done manually in the Canva editor — don't attempt a workaround.
+When a requested change is not in the CAN list, tell the user it must be done manually in the Canva editor — don't attempt a workaround.
 
 ## Responsive pages — restricted operation set
 
-Some pages come back marked `is_responsive: true`. On those pages, ONLY these operations are allowed:
+Some pages come back from `read-design` with `"type": "responsive"` (pass `is_responsive: true` to `edit-design` for these). On those pages, ONLY these operations are allowed:
 `update_title`, `replace_text`, `update_fill`, `delete_element`, `find_and_replace_text`.
 
-Before calling `perform-editing-operations`, check the `pages` array. If any operation targets a responsive page with an unsupported op (e.g. `format_text`, `position_element`, `resize_element`, `insert_fill`), do NOT make the call — tell the user that operation isn't supported on that page and offer an alternative.
+On responsive pages `edit-design` returns no thumbnail, so verify the edit against the returned document instead (and set `is_empty` when the page has no populated text regions or elements). If an unsupported operation type is included, the whole call is rejected and nothing is applied. Before calling `edit-design`, check the page data returned by `read-design`. If any operation targets a responsive page with an unsupported op (e.g. `format_text`, `position_element`, `resize_element`, `insert_fill`), do NOT make the call — tell the user that operation isn't supported on that page and offer an alternative.
 
 ## The commit approval gate (required)
 
-`commit-editing-transaction` makes changes permanent. You MUST show the user exactly what changed (and the preview thumbnail) and get explicit approval before committing — e.g. "Here's the preview. Save these changes to your design?" Wait for a clear yes.
+Committing (`edit-design` with `finalize: "commit"`) makes changes permanent. You MUST show the user exactly what changed (and the preview thumbnail) and get explicit approval before committing — e.g. "Here's the preview. Save these changes to your design?" Wait for a clear yes.
 
 - Do NOT commit without approval.
 - Do NOT tell the user changes are saved before the commit call has succeeded.
@@ -61,16 +61,16 @@ Before calling `perform-editing-operations`, check the `pages` array. If any ope
 - Nothing provided → ask for the design ID or link.
 
 ### Step 2: Start the transaction and inspect
-Call `Canva:start-editing-transaction`. Show the thumbnail(s). Use the returned content to locate the exact `element_id`s you need to target. (If you only needed to look, call `cancel-editing-transaction` and stop.)
+Call `Canva:read-design` with `open_transaction: true` (include `thumbnails` and `design_content`). Show the thumbnail(s). Use the returned `design_content` to locate the exact `locator_id`s you need to target. (If you only needed to look, call `edit-design` with `finalize: "cancel"` and stop.)
 
 ### Step 3: Build and perform operations
-Translate the user's request into concrete operations. Confirm scope first when a `find_and_replace_text` string could match in multiple places or contexts — ask which instances they mean. Batch all operations into one `perform-editing-operations` call when you can.
+Translate the user's request into concrete operations. Confirm scope first when a `find_and_replace_text` string could match in multiple places or contexts — ask which instances they mean. Batch all operations into one `edit-design` call (`finalize: "keep_open"`) when you can.
 
 ### Step 4: Preview and commit
-Show the resulting thumbnail and a plain-language list of what changed. Ask for approval, then `commit-editing-transaction`. Share the edit link.
+Show the resulting thumbnail and a plain-language list of what changed. Ask for approval, then call `edit-design` with `finalize: "commit"`. Share the edit link.
 
 ## Rules
-- Always remember and reuse the `transaction_id` and `pages` array within a transaction.
+- Always remember and reuse the `transaction_id` within a transaction.
 - Never leave a transaction uncommitted without telling the user their draft was discarded.
 - For destructive ops (`delete_element`, large `find_and_replace_text`), confirm scope before performing.
-- Prefer one batched `perform-editing-operations` call over many small ones.
+- Prefer one batched `edit-design` call over many small ones.
