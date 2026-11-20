@@ -9,10 +9,11 @@ Act as a design reviewer: read the design as it actually appears, then return co
 
 ## What you can actually read (and the gap to know about)
 
-- **`Canva:get-design-content`** returns text (`richtexts`) only — good for copy, headings, and wording, but it does NOT include colors, fonts, sizes, or element positions.
-- **`Canva:get-design-thumbnail`** gives you the rendered image — this is how you "see" layout, hierarchy, balance, color, and contrast. Always pull this; visual critique depends on it.
-- **Element positions, sizes, and text** are reliably available from a **read-only** editing transaction: `Canva:start-editing-transaction`, inspect the returned `richtexts`/`fills`, then `Canva:cancel-editing-transaction` (never commit — you are not changing anything). Use this for layout/spacing/alignment detail.
-- **Colors and fonts are NOT reliably exposed.** Tested: the transaction payload often returns only text + position + dimension per element, with no color or font attributes. So treat the **thumbnail as the primary source** for any color, contrast, or typography judgement, and treat transaction style data as best-effort (use it when present, don't depend on it). Never report a specific hex/font as fact unless the payload actually contained it.
+- **`Canva:read-design`** returns text and wording, page count, title/metadata, page thumbnails, and presenter notes. Request `thumbnails` in `filter.fields` (and `thumbnail_pages`) to "see" layout, hierarchy, balance, color, and contrast. Always pull thumbnails; visual critique depends on them. Text content does NOT include reliable colors or fonts.
+- **`Canva:get-design-pages`** lists a design's pages with individual thumbnails (not available for Canva Docs).
+- **Element positions, sizes, and text** are available by opening a **read-only** transaction: `Canva:read-design` with `open_transaction: true` and `design_content`, then `Canva:edit-design` with `finalize: "cancel"` (never commit — you are not changing anything). Use this for layout/spacing/alignment detail.
+- **`Canva:read-design-v2`** can return structured page content (CDF JSON with locator IDs) if it is available and richer style detail is needed.
+- **Colors and fonts are NOT reliably exposed.** The content payload often returns only text + position + dimension per element, with no color or font attributes. So treat the **thumbnail as the primary source** for any color, contrast, or typography judgement, and treat style data as best-effort (use it when present, don't depend on it). Never report a specific hex/font as fact unless the payload actually contained it.
 
 ## Workflow
 
@@ -20,9 +21,8 @@ Act as a design reviewer: read the design as it actually appears, then return co
 Short link → `Canva:resolve-shortlink`; full URL → extract the ID; raw `D...` ID → use directly; otherwise ask.
 
 ### Step 2: Read the design
-- `Canva:get-design` for title and page count.
-- `Canva:get-design-thumbnail` (and/or `Canva:get-design-pages`) to see each page.
-- `Canva:get-design-content` for the text.
+- `Canva:read-design` with `design_metadata`, `design_content`, and `thumbnails` for title, page count, text, and page images.
+- `Canva:get-design-pages` to see each page thumbnail in order (multi-page designs).
 - Optional (typography/color detail): read-only transaction as described above, then cancel it.
 
 ### Step 3: Evaluate across dimensions
@@ -59,10 +59,10 @@ Organise findings by **page**, each with a **severity** and a **concrete fix**:
 Use severities **High / Med / Low**. Lead with the few highest-impact items, then the per-page detail. Be specific and located (page + element), not generic ("make it pop").
 
 ### Step 5: Offer to act
-End by offering to implement the API-fixable items via **`canva-edit-design`**, and note which items need manual work in Canva (e.g. font-family or background changes the API can't touch — see `canva-edit-design` for the full CANNOT list).
+End by offering to implement the API-fixable items via **`canva-edit-design`**, and note which items need manual work in Canva (e.g. font-family changes the API can't touch — see `canva-edit-design` for the full CANNOT list).
 
 ## Rules
-- Never edit or commit anything — this skill is strictly read-only. If you open a transaction to inspect, always `cancel-editing-transaction`.
+- Never edit or commit anything — this skill is strictly read-only. If you open a transaction to inspect, always cancel with `edit-design` (`finalize: "cancel"`).
 - Ground every point in something you actually observed in the thumbnail or content — no generic advice.
 - Prioritise. A ranked shortlist beats an exhaustive list the user won't read.
 - Be candid but constructive; always pair a problem with a specific fix.

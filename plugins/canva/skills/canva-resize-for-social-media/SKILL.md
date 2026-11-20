@@ -28,11 +28,11 @@ Determine which Canva design the user wants to resize. This can be provided in t
 
 1. **Direct design ID**: User provides a design ID (starts with "D")
    - Example: "resize design DABcd1234ef for all social media"
-   - Use the design ID directly with `get-design` tool to retrieve design information
+   - Use the design ID directly with the `read-design` tool to retrieve design information
    
 2. **Direct design URL**: User provides a Canva design link
    - Example: "resize https://www.canva.com/design/DABcd1234ef/... for all social media"
-   - Use the full, design share URL with `get-design` tool
+   - Use the full, design share URL with the `read-design` tool
    
 3. **Search by design name**: Use `search-designs` tool with the design name as the query
    - Example: "resize my Demo Brand Template: Brix&Hart Flyer design for all social media"
@@ -45,9 +45,9 @@ Determine which Canva design the user wants to resize. This can be provided in t
 
 ### Step 2: Retrieve Source Design Information
 
-Confirm the design exists and is accessible before resizing. Use `get-design` with the design ID or share URL. Some hosts expose this as `read-design` instead (same inputs; request `design_metadata` only). Use whichever is available.
+Confirm the design exists and is accessible before resizing. Use `read-design` with the design ID or share URL (request `design_metadata` only via `filter.fields`).
 
-- If neither is available, skip this check and go straight to resizing. The resize call fails with a clear error if the design isn't reachable, so the check is a convenience, not a requirement.
+- If it is unavailable, skip this check and go straight to resizing. The resize call fails with a clear error if the design isn't reachable, so the check is a convenience, not a requirement.
 - If the check returns permission denied, stop and tell the user the connected Canva account can't access the design (it may be owned by another account or view-only). Ask for a copy or edit access. Don't attempt to resize.
 
 ### Step 3: Resolve Target Placements and Canvases
