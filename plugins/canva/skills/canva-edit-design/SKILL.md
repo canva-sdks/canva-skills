@@ -9,8 +9,8 @@ The canonical, safe way to apply edits to an existing Canva design. Every Canva 
 
 ## The Transaction Protocol (always these steps, in order)
 
-1. **`Canva:read-design`** — pass the `design_id` with `open_transaction: true` and `filter.fields` including `"thumbnails"` and `"design_content"`. Remember the returned `transaction_id`; it is required by later calls. Use the returned `design_content` to find the `locator_id` of each element to edit, and note each page's `type`/`isEditable` values. ALWAYS show the user the thumbnail(s) returned here.
-2. **`Canva:edit-design`** — apply edits with `finalize: "keep_open"`. Pass the `transaction_id`, the `page_index` of the page being changed, and an `operations` array. Batch multiple operations into a single call wherever possible. Set `is_responsive` / `is_editable` from the page data returned by `read-design`.
+1. **`Canva:read-design`** — pass the `design_id` with `open_transaction: true` and `filter.fields` including `"thumbnails"` and `"design_content"` (thumbnails default to page 1 only, so set `filter.thumbnail_pages` for other pages). Remember the returned `transaction_id`; it is required by later calls. Use the returned `design_content` to find the `locator_id` of each element to edit (and the page IDs needed by `page_id` operations such as `add_text`, `insert_fill` and `insert_shape`), and note each page's `type` and `isEditable` values. ALWAYS show the user the thumbnail(s) returned here.
+2. **`Canva:edit-design`** — apply edits with `finalize: "keep_open"`. Pass the `transaction_id`, the one-based `page_index` of the page being changed, and an `operations` array. Batch multiple operations for the same page into a single call wherever possible; edits to a different page need a separate call. Set `is_responsive` (true when the page's `type` is `"responsive"`) and `is_editable` (from the page's `isEditable`) from the `read-design` page data. If `is_editable` is false, no operations are applied.
 3. **`Canva:edit-design`** with `finalize: "commit"` and **no** `operations` — save. See the approval gate below. After committing, the `transaction_id` is invalid; a new edit needs a new transaction.
 4. **`Canva:edit-design`** with `finalize: "cancel"` and **no** `operations` — discard the draft instead of saving (e.g. the user rejects the preview, or you opened a transaction only to inspect the design).
 
@@ -39,7 +39,7 @@ When a requested change is not in the CAN list, tell the user it must be done ma
 Some pages come back from `read-design` with `"type": "responsive"` (pass `is_responsive: true` to `edit-design` for these). On those pages, ONLY these operations are allowed:
 `update_title`, `replace_text`, `update_fill`, `delete_element`, `find_and_replace_text`.
 
-Before calling `edit-design`, check the page data returned by `read-design`. If any operation targets a responsive page with an unsupported op (e.g. `format_text`, `position_element`, `resize_element`, `insert_fill`), do NOT make the call — tell the user that operation isn't supported on that page and offer an alternative.
+On responsive pages `edit-design` returns no thumbnail, so verify the edit against the returned document instead (and set `is_empty` when the page has no populated text regions or elements). If an unsupported operation type is included, the whole call is rejected and nothing is applied. Before calling `edit-design`, check the page data returned by `read-design`. If any operation targets a responsive page with an unsupported op (e.g. `format_text`, `position_element`, `resize_element`, `insert_fill`), do NOT make the call — tell the user that operation isn't supported on that page and offer an alternative.
 
 ## The commit approval gate (required)
 
@@ -61,7 +61,7 @@ Committing (`edit-design` with `finalize: "commit"`) makes changes permanent. Yo
 - Nothing provided → ask for the design ID or link.
 
 ### Step 2: Start the transaction and inspect
-Call `Canva:read-design` with `open_transaction: true` (include `thumbnails` and `design_content`). Show the thumbnail(s). Use the returned content to locate the exact `element_id`s you need to target. (If you only needed to look, call `edit-design` with `finalize: "cancel"` and stop.)
+Call `Canva:read-design` with `open_transaction: true` (include `thumbnails` and `design_content`). Show the thumbnail(s). Use the returned `design_content` to locate the exact `locator_id`s you need to target. (If you only needed to look, call `edit-design` with `finalize: "cancel"` and stop.)
 
 ### Step 3: Build and perform operations
 Translate the user's request into concrete operations. Confirm scope first when a `find_and_replace_text` string could match in multiple places or contexts — ask which instances they mean. Batch all operations into one `edit-design` call (`finalize: "keep_open"`) when you can.

@@ -9,7 +9,7 @@ Act as a design reviewer: read the design as it actually appears, then return co
 
 ## What you can actually read (and the gap to know about)
 
-- **`Canva:read-design`** returns text and wording, page count, title/metadata, page thumbnails, and presenter notes. Request `thumbnails` in `filter.fields` (and `thumbnail_pages`) to "see" layout, hierarchy, balance, color, and contrast. Always pull thumbnails; visual critique depends on them. Text content does NOT include reliable colors or fonts.
+- **`Canva:read-design`** returns text and wording, page count, title/metadata, page thumbnails, and presenter notes. Request `thumbnails` in `filter.fields` (thumbnails default to page 1, so set `filter.thumbnail_pages` for other pages) to "see" layout, hierarchy, balance, color, and contrast. Always pull thumbnails; visual critique depends on them. Text content does NOT include reliable colors or fonts.
 - **`Canva:get-design-pages`** lists a design's pages with individual thumbnails (not available for Canva Docs).
 - **Element positions, sizes, and text** are available by opening a **read-only** transaction: `Canva:read-design` with `open_transaction: true` and `design_content`, then `Canva:edit-design` with `finalize: "cancel"` (never commit — you are not changing anything). Use this for layout/spacing/alignment detail.
 - **`Canva:read-design-v2`** can return structured page content (CDF JSON with locator IDs) if it is available and richer style detail is needed.
