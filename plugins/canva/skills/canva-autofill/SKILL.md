@@ -10,7 +10,7 @@ Autofill merges values into named data fields that a designer has already placed
 
 The flow is always the same five moves: **find the source, read its schema, map the data, fill, hand off.** Most failures come from skipping the second move and guessing field names, so never skip it.
 
-Tool names and parameters below reflect the Canva MCP at the time of writing. The tool surface changes; where a live tool description disagrees with this file, trust the live description. Every Canva tool call should include a short `user_intent`.
+Tool names and parameters below reflect the Canva MCP at the time of writing. The tool surface changes; where a live tool description disagrees with this file, trust the live description. Include a short `user_intent` when the tool schema accepts it.
 
 ## 1. Find the source
 
@@ -54,10 +54,10 @@ Image and video fields are both media fields: each takes a Canva `asset_id`, so 
 
 The schema's reported type does not reliably tell the two apart. A video placeholder can be reported as `image`, and a field reported that way accepts a `video` value. Set the value's `type` to match the asset being inserted (`image` for an image, `video` for a video). If the call is rejected, retry once with the field's reported type, and tell the user what happened.
 
-- Public URL: `upload-asset-from-url`.
-- File attached in chat: `create-upload-url`, then send the bytes as that tool instructs. Each upload URL is single-use.
-- Already in Canva: find it with `get-assets`.
-- Needs creating: generate it with `generate-image`, then use the resulting media ID.
+- Public URL: `upload-asset-from-url` with the URL and an asset name.
+- File attached in chat: use the file input on `upload-asset-from-url` if the host exposes it. Otherwise use `create-upload-url` if available and follow its upload instructions.
+- Already in Canva: use the supplied asset ID or one returned from inspecting a design. Use `get-assets` to verify known asset IDs.
+- Needs creating: start `generate-image`. If no widget is shown, follow up with `get-generate-image-job` and the returned job ID. Use the resulting Canva asset ID when available.
 
 Finish all uploads before the autofill call, and reuse an asset ID across records when the same image appears more than once.
 
@@ -115,14 +115,14 @@ Report in this shape:
 - Which fields were left on placeholder content.
 - Anything that failed, with the reason.
 
-Then offer the natural next step, without doing it unasked: export (`export-design`), resize for another channel (`resize-design`), or move to a folder. Small tweaks to a filled design belong to the editing tools, not to another autofill pass.
+Then offer the natural next step, without doing it unasked: export, resize (`resize-design`), or move to a folder, depending on the tools the host exposes. Small tweaks to a filled design belong to the editing tools, not to another autofill pass.
 
 ## When the template has no fields
 
 A template is only autofillable once a designer has tagged elements as data fields. If the dataset comes back empty:
 
 1. Tell the user plainly that this template has no data fields yet, and that tagging is a one-off setup step.
-2. Offer the options: pick a different template that has fields; have a template owner add fields in the Canva editor (the Data autofill / Bulk Create app, connecting elements to named fields) and republish; or, if the user owns the template and asks for it, do the tagging through the MCP by following the workflow in the `create-brand-template-draft` tool description and finishing with `publish-brand-template`.
+2. Offer the options: pick a different template that has fields; have a template owner add fields in the Canva editor (the Data autofill / Bulk Create app, connecting elements to named fields) and republish; or, if the user owns the template and asks for it, use the authoring workflow described by `create-brand-template-draft` and `publish-brand-template` when the host exposes both. Otherwise use the Canva editor.
 3. If they just need a design now, `create-design-from-brand-template` makes an unfilled copy they can edit by hand.
 
 Publishing changes the template for everyone who uses it, so only publish when the user has asked for that.

@@ -1,6 +1,6 @@
 ---
 name: canva-branded-presentation
-description: Create branded marketing and sales presentation decks with Canva AI using the connected Canva app's list_brand_kits and direct generate-design flow. Use when the user asks to generate, create, draft, or build a Canva sales deck, marketing deck, pitch deck, product deck, or other branded slide presentation; always suggest available brand kits and ask the user to choose before generation. Do not use for Canva Docs, reports, proposals, single-page visual designs, templates, prepare-design-generation, or _prepare_design_generation flows.
+description: Create branded marketing and sales presentation decks with Canva AI using a selected Canva Brand Kit and the connected Canva MCP design generation tool. Use when the user asks to generate, create, draft, or build a Canva sales deck, marketing deck, pitch deck, product deck, or other branded slide presentation; always suggest available brand kits and ask the user to choose before generation. Use the corresponding Canva workflow for other design formats or Brand Templates.
 ---
 
 # Canva Presentation Builder
@@ -9,9 +9,7 @@ Use the Canva app to generate presentation-type designs with Canva AI, especiall
 
 ## Core Rule
 
-For deck requests, call the Canva app `generate-design` tool directly with `design_type: "presentation"` and presentation-specific content. If the app exposes callable names, this means use `_generate_design`, not `_prepare_design_generation`. Never use `prepare-design-generation`, `_prepare_design_generation`, or outline-review helpers for this skill. Do not use `doc`, `document`, `proposal`, `report`, `infographic`, poster, social post, or other design types. If the user explicitly switches away from presentations, use a different workflow instead of this skill.
-
-The point of this skill is to keep Canva AI generation presentation-shaped when using a broad design-generation tool. Always give `generate-design` enough deck-specific context in its `query` so it does not produce a document-like or single-page result. If direct generation cannot proceed without a prepare-design-generation step, stop and tell the user rather than calling the prepare tool.
+Use `create-design` with `format: "Presentation"` and a deck-specific `brief`. If the user switches to a different output type or asks to start from a Brand Template, use the corresponding Canva workflow.
 
 ## Deck Focus
 
@@ -44,15 +42,13 @@ Ask a concise follow-up only when the missing choice would materially change the
 
 For every deck request:
 
-- Call Canva `list_brand_kits` `_list_brand_kits` when using callable names) to find available brand kits.
+- Call `list-brand-kits` to find available brand kits.
 - Suggest the available brand kits to the user and ask them to choose one before generation.
 - Do not auto-select a brand kit, even if only one kit is available or one kit seems obviously relevant.
-- Pass the selected kit as `brand_kit_id` when calling `generate-design`.
+- Pass the selected kit as `brand_kit_id` when calling `create-design`.
 - If no brand kits are available, say that none were found and ask whether to continue without a brand kit.
-- If `list_brand_kits` reports missing `brandkit:read` scopes, ask the user to disconnect and reconnect the Canva app before continuing.
+- If `list-brand-kits` reports missing `brandkit:read` scopes, ask the user to disconnect and reconnect the Canva app before continuing.
 - If the user explicitly chooses to continue without a brand kit, keep the deck brand-aware using the supplied company, product, tone, colors, or messaging, without inventing brand rules.
-
-Do not use Canva template tools in this skill, including `search-brand-templates`, `get-brand-template-dataset`, `autofill-design`, or `create-design-from-brand-template`. If the user asks to use, search, start from, or autofill a template, say this skill only uses brand kits with direct `generate-design` and ask whether they want to continue without templates or switch to a different Canva template workflow.
 
 ## Generation Prompt
 
@@ -75,10 +71,6 @@ Prefer concrete, outcome-oriented slide titles over vague section labels. Make s
 
 For a sales deck, include the likely buyer problem, solution fit, benefits, credibility, objection-aware proof, and next step. For a marketing deck, include campaign or brand context, target audience, message hierarchy, offer, channels or use cases when relevant, and a memorable CTA.
 
-## Candidate Finalization
+## Deliver
 
-If Canva AI returns design candidates, present the candidates to the user and ask which one they want to turn into an editable design. After selection, use Canva's create-from-candidate flow and return the final Canva design link.
-
-## Boundaries
-
-Use this skill only for creating new Canva AI presentation drafts through `list_brand_kits`, direct `generate-design`, and create-from-candidate. For editing an existing Canva design, implementing reviewer feedback, translating, resizing, brand-checking, prepare-design-generation, or template-based generation, use the more specific Canva skill or app workflow for that task.
+If no widget is shown, poll `get-create-design-async-job` with the returned job ID and continuation token, respecting the polling policy. Inspect the completed deck with the available design reader and share its Canva edit link.

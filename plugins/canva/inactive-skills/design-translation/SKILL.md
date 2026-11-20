@@ -11,21 +11,19 @@ Translate all text elements in a Canva design to a target language, creating a n
 
 ### 1. Locate the Design
 
-If user provides a **design ID** directly (typically starts with `D`, e.g. `DABcd1234ef`), use that as the design identifier; **do not** pass it to `Canva:search-designs` (search is for titles, not IDs).
+If user provides a **design ID** directly (typically starts with `D`, e.g. `DABcd1234ef`), use that as the design identifier; **do not** pass it to `search-designs` (search is for titles, not IDs).
 
 If user provides a **URL**: Extract the design ID from the URL (format: `https://www.canva.com/design/{design_id}/...`).
 
-If user provides a **name**: Use `Canva:search-designs` to find the design by title. If multiple matches, ask user to clarify.
+If user provides a **name**: Use `search-designs` to find the design by title. If multiple matches, ask user to clarify.
 
 ### 2. Create a Translated Copy
 
-Use `Canva:resize-design` with the same dimensions to create a copy. This preserves the original design untouched.
+Use `copy-design` to duplicate the source.
 
 ### 3. Start Editing Transaction
 
-Use `Canva:start-editing-transaction` on the new copy to get:
-- `transaction_id` for making edits
-- All text elements with their `element_id` and current text content
+Follow the tool pairing in `canva-edit-design`. Open a transaction on the copy with `read-design` and `open_transaction: true`, or use `read-design-v2` with the code-based editor when the host exposes that pairing. Keep the transaction ID, page and locator IDs, and original text.
 
 ### 4. Translate Text
 
@@ -36,32 +34,27 @@ For each text element returned:
 
 ### 5. Apply Translations
 
-Use `Canva:perform-editing-operations` with `replace_text` operations for all translated elements. Batch all replacements in a single call.
-
-Also update the design title to indicate the language (e.g., append " (Spanish)" or use translated title).
+Stage changes with `edit-design` using `finalize: "keep_open"`. For the operations schema, batch `replace_text` operations by page using returned locator IDs. Follow the responsive-page guidance in `canva-edit-design` and the returned code guide for the code-based editor. Update the title to identify the language if the editor supports it.
 
 ### 6. Commit Changes
 
-After showing the user the translated preview thumbnail:
-1. Ask for explicit approval to save
-2. Use `Canva:commit-editing-transaction` to finalize
-3. Provide the link to the new translated design
+Show the translated preview and get explicit approval. Call the same editing tool with `finalize: "commit"` and no operations or code. Share the edit link.
 
 ## Example Interaction
 
 **User**: Translate my "Summer Sale Poster" to French
 
 **Steps**:
-1. Search: `Canva:search-designs` with query "Summer Sale Poster"
-2. Copy: `Canva:resize-design` to create duplicate
-3. Edit: `Canva:start-editing-transaction` on copy
+1. Search: `search-designs` with query "Summer Sale Poster"
+2. Copy: `copy-design` to create the duplicate
+3. Edit: `read-design` with `open_transaction: true` on the copy
 4. Translate all text elements to French
-5. Apply: `Canva:perform-editing-operations` with all `replace_text` operations
+5. Apply: stage translations with `edit-design`
 6. Show preview, get approval, commit
 
 ## Important Notes
 
 - Always create a copy—never modify the original design
-- Batch all text replacements in one `perform-editing-operations` call for efficiency
+- Batch compatible edits per page
 - If translation significantly changes text length, warn user that layout adjustments may be needed in Canva
 - For designs with many pages, translate all pages in the same transaction

@@ -1,11 +1,11 @@
 ---
 name: canva-agent-guide
-description: Start here for any Canva task. Explains how to discover the Canva MCP tools and skills available in the current session, which tool to use for which design job, the shape every multi-step Canva workflow follows, and how to write a new Canva skill. Use whenever the user wants to create, edit, review, resize, brand-check, import, export, or bulk-produce a design, presentation, deck, slides, report, doc, poster, flyer, social post, image, or video, even when they do not name Canva; when it is unclear which Canva tool or skill applies; when no existing skill fits a multi-step Canva workflow; or when asked to build or update a Canva skill. Not for questions about how the Canva product itself works; use the Canva help tool for those.
+description: Start here for any Canva task. Explains how to discover the Canva MCP tools and skills available in the current session, which tool to use for which design job, the shape every multi-step Canva workflow follows, and how to write a new Canva skill. Use whenever the user wants to create, edit, review, resize, brand-check, import, export, or bulk-produce a design, presentation, deck, slides, report, doc, poster, flyer, social post, image, or video, even when they do not name Canva; when it is unclear which Canva tool or skill applies; when no existing skill fits a multi-step Canva workflow; or when asked to build or update a Canva skill. For Canva product questions, use the Help Center or the connected help tool if available.
 license: Apache-2.0
 metadata:
   author: Canva
   version: "1.0"
-  last-verified: "2026-11-17"
+  last-verified: "2026-11-20"
 ---
 
 # Canva agent guide
@@ -25,39 +25,31 @@ Do this once per session, before the first Canva call.
    (`Canva:create-design`, `mcp__Canva__create-design`, and so on), so match on
    the part after the prefix. If no Canva tools are listed, tell the user the
    Canva connector needs to be connected and stop.
-2. **Find the skills.** If your host supports skills over MCP, the Canva server
-   lists them through `skills/list`, each with a `skill://` URI. Otherwise use
-   the skills installed with the Canva plugin. Load a skill only when its
-   description matches the task.
-3. **Trust the live list over any document.** If a skill, including this one,
-   names a tool that is not in your tool list, do not call it and do not guess
-   a replacement by name. Read the descriptions of the tools you do have and
-   use the one that covers the job. Tell the user if nothing does.
-4. **Prefer current tools over legacy ones.** Some tool descriptions begin with
-   a legacy notice. Follow that notice; it says exactly when the tool still
-   applies.
+2. **Find the skills.** Use the skills available in the host or installed with the Canva plugin. Load a skill when its description fits.
+3. **Use the live tool list and schemas.** Feature flags, scopes and host configuration can change which tools are callable. If a named tool is missing, look for an exposed tool whose description covers the same job. Explain the gap if none does.
+4. **Verify tool references when editing a skill.** Use the Agent Connector Server manifests in `ecosystem/agent_connector_server/toolgen/tools/` first, including the target host's configuration. Use `web/tools/cloudflare/mcp_worker/` registrations for worker-specific tools. Prefer the Agent Connector Server name and schema when the definitions differ.
 
 ## 2. Pick the tool for the job
 
-Tool names below were verified on the date in the frontmatter. Read each
-tool's description before the first call for its inputs and limits.
+Read each exposed tool's description for its inputs and limits. Some routes, including help, export, layered image separation and comment replies, vary by host.
 
 | The user wants | Start with | Then |
 |---|---|---|
-| A new design from a brief (deck, doc, poster, flyer, social post, resume, website) | `create-design` | Poll `get-create-design-async-job` only when no widget is shown |
+| A new design from a brief (deck, doc, poster, flyer, social post, resume, website) | `create-design` | If no widget is shown, poll `get-create-design-async-job` with the returned job ID and continuation token |
 | A design built from a brand template | `search-brand-templates` | `create-design-from-brand-template` |
 | Many designs from rows of data | `search-brand-templates` with `dataset: non_empty` | `get-brand-template-dataset`, then `autofill-design` per row |
-| A standalone image, illustration, icon, or photo | `generate-image` | `remove-background` or `separate-image-layers` if asked |
+| A standalone image, illustration, icon, or photo | `generate-image` | If no widget is shown, poll `get-generate-image-job`. Use `remove-background` or `separate-image-layers` if requested and exposed |
 | A short video | `get-video-production-guide` | `create-video`, after the AI-limit confirmation its description requires |
 | To find an existing design | `search-designs` (or `resolve-shortlink` for canva.link URLs) | `search-folders`, `list-folder-items` for folders |
-| To read, summarise, or review a design | `read-design` | Request thumbnails for anything visual |
+| To edit an existing design | Open a transaction with the reader exposed by the host | Use the paired editor to stage, preview and save through the `canva-edit-design` workflow |
+| To read, summarise, or review a design | `read-design` or `read-design-v2`, whichever the host exposes | Request thumbnails for visual review |
 | A different size or channel format | `resize-design` | One call per target canvas; each makes a new design |
-| A copy, or pages combined across designs | `copy-design` | `merge-designs` |
-| A file to download (PDF, PNG, PPTX, MP4) | `get-export-formats` | `export-design` |
+| A copy, or pages combined across designs | `copy-design` for a duplicate | `merge-designs` when combining pages from different designs |
+| A file to download (PDF, PNG, PPTX, MP4) | `get-export-formats` when available | `export-design` when available, or use the Canva editor |
 | To bring in a public file or web page | `import-design-from-url` | Public HTTPS only |
-| To use their own photos, logo, or video in a design | `upload-asset-from-url` (public URL) or `create-upload-url` (attached or local file) | Place the returned ID with a tool that accepts one: `read-design` then `edit-design-v2` for a new or existing design, or `autofill-design` for template fields. Use `get-assets` only to inspect media by ID |
-| To read or answer review comments | `list-comments`, `list-replies` | `reply-to-comment`, `comment-on-design` |
-| An answer about how Canva works | `help` | |
+| To use their own photos, logo, or video in a design | `upload-asset-from-url` for a public URL or an attachment if the live schema accepts one, or `create-upload-url` if the host supports direct upload | Use the returned ID with the available editing tool or `autofill-design`. Use `get-assets` to inspect known asset IDs |
+| To read or answer review comments | `list-comments` and, where exposed, `list-replies` | Use `reply-to-comment` or `comment-on-design` if available and requested |
+| An answer about how Canva works | `help` when available | Canva Help Center |
 
 Two distinctions that are easy to get wrong:
 
@@ -97,7 +89,7 @@ the basis of your final report and the raw material for a skill (section 6).
 
 - **Resolve the design first.** Short link, full URL, design ID (starts with
   `D`), or a search by name. If several designs match, ask.
-- **Fill `user_intent` on every call** with one plain sentence about the goal.
+- **Fill `user_intent` when the live schema accepts it** with one plain sentence about the goal.
 - **Edit inside a transaction.** Open it, stage edits, look at the updated
   thumbnail, then commit or cancel. Uncommitted edits are lost.
 - **Ask before what cannot be undone or costs the user something:** committing

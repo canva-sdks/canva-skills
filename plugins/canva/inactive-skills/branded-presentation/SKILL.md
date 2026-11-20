@@ -11,30 +11,28 @@ Create professional, on-brand presentations in Canva from user-provided outlines
 
 1. **Get the content source**
    - If the user provides text directly, use that as the outline/brief
-   - If the user provides a **Canva design ID** directly (typically starts with `D`, e.g. `DABcd1234ef`), use it as `design_id` with `Canva:start-editing-transaction` to read its contents; **do not** use `Canva:search-designs` for a raw ID
-   - If the user provides a Canva design link (e.g., `https://www.canva.com/design/DAG.../...`), extract the design ID from the URL and use `Canva:start-editing-transaction` to read its contents
-   - If the user references a Canva doc by name, use `Canva:search-designs` to find it, then `Canva:start-editing-transaction` to read its contents
+   - If the user provides a **Canva design ID** directly (typically starts with `D`, e.g. `DABcd1234ef`), use it as `design_id` with `read-design` to read its contents; **do not** use `search-designs` for a raw ID
+   - If the user provides a Canva design link (e.g., `https://www.canva.com/design/DAG.../...`), extract the design ID from the URL and use `read-design` to read its contents
+   - If the user references a Canva doc by name, use `search-designs` to find it, then `read-design` to read its contents
+
+   - Read source content without opening an editing transaction. Use `read-design-v2` if that is the reader available on the host.
 
 2. **List available brand kits**
-   - Call `Canva:list-brand-kits` to retrieve the user's brand kits
+   - Call `list-brand-kits` to retrieve the user's brand kits
    - If only one brand kit exists, use it automatically without asking
    - If multiple brand kits exist, present the options and ask the user to select one
 
 3. **Generate the presentation**
-   - Call `Canva:generate-design` with:
-     - `design_type`: "presentation"
-     - `brand_kit_id`: the selected brand kit ID
-     - `query`: a detailed prompt following the presentation format below
-   - Show the generated candidates to the user
+   - Call `create-design` with `format: "Presentation"`, the selected `brand_kit_id`, and a `brief` following the structure below.
+   - If no widget is shown, poll `get-create-design-async-job` with the returned job ID and continuation token, respecting the polling policy.
 
-4. **Finalize**
-   - Ask the user which candidate they prefer
-   - Call `Canva:create-design-from-candidate` to create the editable design
-   - Provide the user with the link to their new presentation
+4. **Deliver**
+   - Inspect the finished presentation with the available design reader and check that it is a multi-slide deck.
+   - Provide the edit link to the new presentation.
 
-## Presentation Query Format
+## Presentation Brief Format
 
-Structure the query for `Canva:generate-design` with these sections:
+Structure the `brief` for `create-design` with these sections:
 
 **Presentation Brief**
 - Title: working title for the deck
