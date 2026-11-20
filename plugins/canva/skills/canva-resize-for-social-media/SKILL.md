@@ -1,6 +1,6 @@
 ---
 name: canva-resize-for-social-media
-description: Create channel-ready variants of an existing Canva campaign design. Use when users ask to resize or adapt one campaign for multiple social platforms, produce variants for each channel, turn landscape creative into vertical or square formats, create platform-specific versions, or prepare TikTok, Instagram, LinkedIn, Facebook, YouTube, Pinterest, X, or custom-dimension variations. When they ask for each channel or platform-ready variants and do not name placements or dimensions, use the default channel set in references/channel-formats.md. A named platform plus placement uses that file's lookup table. This skill creates resized copies and returns edit links; use edit-design separately when the user asks to recompose, adjust crop or safe areas, change copy, or use generative fill.
+description: Create channel-ready variants of an existing Canva campaign design. Use when users ask to resize or adapt one campaign for multiple social platforms, produce variants for each channel, turn landscape creative into vertical or square formats, create platform-specific versions, or prepare TikTok, Instagram, LinkedIn, Facebook, YouTube, Pinterest, X, or custom-dimension variations. When they ask for each channel or platform-ready variants and do not name placements or dimensions, use the default channel set in references/channel-formats.md. A named platform plus placement uses that file's lookup table. This skill creates resized copies and returns edit links; use the Canva editing workflow separately for supported layout, crop or copy changes.
 ---
 
 # Canva Resize for Social Media
@@ -24,15 +24,15 @@ When the user asks for each channel, all channels, every platform, or platform-r
 
 ### Step 1: Identify the Source Design
 
-Determine which Canva design the user wants to resize. This can be provided in three ways:
+Determine which Canva design the user wants to resize.
 
 1. **Direct design ID**: User provides a design ID (starts with "D")
    - Example: "resize design DABcd1234ef for all social media"
-   - Use the design ID directly with `get-design` tool to retrieve design information
+   - Use the design ID directly.
    
 2. **Direct design URL**: User provides a Canva design link
    - Example: "resize https://www.canva.com/design/DABcd1234ef/... for all social media"
-   - Use the full, design share URL with `get-design` tool
+   - Extract the ID from the URL. For a canva.link URL, call `resolve-shortlink` first.
    
 3. **Search by design name**: Use `search-designs` tool with the design name as the query
    - Example: "resize my Demo Brand Template: Brix&Hart Flyer design for all social media"
@@ -45,9 +45,9 @@ Determine which Canva design the user wants to resize. This can be provided in t
 
 ### Step 2: Retrieve Source Design Information
 
-Confirm the design exists and is accessible before resizing. Use `get-design` with the design ID or share URL. Some hosts expose this as `read-design` instead (same inputs; request `design_metadata` only). Use whichever is available.
+Use `read-design` or `read-design-v2` with the design ID, if exposed, to confirm access. Request only design metadata.
 
-- If neither is available, skip this check and go straight to resizing. The resize call fails with a clear error if the design isn't reachable, so the check is a convenience, not a requirement.
+- If the read tool is unavailable, proceed with the resolved design ID.
 - If the check returns permission denied, stop and tell the user the connected Canva account can't access the design (it may be owned by another account or view-only). Ask for a copy or edit access. Don't attempt to resize.
 
 ### Step 3: Resolve Target Placements and Canvases
@@ -66,7 +66,7 @@ De-duplicate identical width × height pairs while retaining every requested pla
 
 ### Step 4: Resize to Selected Formats
 
-For each unique target canvas, call `Canva:resize-design` with:
+For each unique target canvas, call `resize-design` with:
 
 - the source `design_id`
 - `design_type: { type: "custom", width, height }`
