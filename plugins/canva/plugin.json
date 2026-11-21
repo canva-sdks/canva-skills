@@ -24,11 +24,14 @@
         "flyer",
         "poster",
         "graphic design",
-        "marketing"
+        "marketing",
+        "video",
+        "real estate"
     ],
     "skills": [
         "./skills/canva-resize-for-social-media",
         "./skills/canva-instagram-post",
+        "./skills/canva-real-estate-listing-videos",
         "./skills/canva-bulk-create",
         "./skills/canva-autofill",
         "./skills/canva-implement-feedback",

@@ -60,6 +60,20 @@ Create editable Instagram posts, stories, and carousels in Canva, then expand th
 - Inspects every page for text fit, contrast, layering, and image proportions, and repairs defects before delivery
 - Prefixes every Canva tool `user_intent` with `[skill:canva-instagram-post]`
 
+### canva-real-estate-listing-videos
+
+Create a polished Canva walkthrough video for a property listing from photos, floor plans, and a listing link.
+
+**Use when:** You want a listing video, property walkthrough, real estate reel, or home tour video built from real listing assets.
+
+**Capabilities:**
+
+- Uses the floor plan to decide how rooms connect and real photos for how they look
+- Writes copy only from verified listing details
+- Preserves photo layout and proportions, and applies supplied branding
+- Uploads the supplied photos to Canva and creates a new video (prefers H3 Max); edits no existing design
+- Not for static flyers, brochures, or social posts; use `create-design` for those
+
 ### canva-bulk-create
 
 Bulk-create Canva designs from tabular data using a brand template, one design per row.
@@ -243,6 +257,9 @@ Simply reference the skills naturally in your conversations:
 # Social media resize
 "Resize design DABcd1234ef for all social media platforms"
 
+# Real estate listing video
+"Make a walkthrough video of this listing from these photos and floor plan"
+
 # Bulk create
 "Bulk create designs from this spreadsheet using my brand template"
 
@@ -299,6 +316,7 @@ canva-skills/
         │   ├── canva-design-feedback/
         │   ├── canva-implement-feedback/
         │   ├── canva-instagram-post/
+        │   ├── canva-real-estate-listing-videos/
         │   └── canva-resize-for-social-media/
         └── inactive-skills/              # Kept in repo, not registered by plugin hosts
             ├── branded-presentation/
