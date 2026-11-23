@@ -2,17 +2,18 @@
     "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
     "name": "canva",
     "displayName": "Canva",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "logo": "assets/logo-canva.svg",
-    "description": "Create, edit, review, resize, and brand-check Canva designs with the Canva MCP server.",
+    "description": "Create, edit, resize, autofill, and brand-check Canva designs from Antigravity. Connects the Canva MCP server and adds guided skills for common design tasks.",
     "suggestedPrompts": [
         "Resize this Canva design for Instagram and LinkedIn",
         "Review this Canva design and suggest improvements",
-        "Check this Canva design against my brand kit",
-        "Help me pick the right Canva tool or skill for my task"
+        "Check this Canva design against my brand kit"
     ],
+    "category": "Design",
     "author": {
-        "name": "Canva"
+        "name": "Canva",
+        "url": "https://www.canva.com/"
     },
     "keywords": [
         "canva",
@@ -27,16 +28,9 @@
         "marketing"
     ],
     "skills": [
-        "./skills/canva-resize-for-social-media",
-        "./skills/canva-instagram-post",
-        "./skills/canva-bulk-create",
-        "./skills/canva-autofill",
-        "./skills/canva-implement-feedback",
-        "./skills/canva-edit-design",
-        "./skills/canva-design-feedback",
-        "./skills/canva-brand-check",
-        "./skills/canva-cli"
+        "./skills"
     ],
     "homepage": "https://www.canva.com/developers/",
-    "repository": "https://github.com/canva-sdks/canva-skills"
+    "repository": "https://github.com/canva-sdks/canva-skills",
+    "license": "Apache-2.0"
 }

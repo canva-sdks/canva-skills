@@ -158,7 +158,8 @@ Each host uses the Canva MCP server at `https://mcp.canva.com/mcp`. Connect the
 
 ### Antigravity
 
-Install from GitHub:
+In the Antigravity app, open **Customizations → Plugins → Discover** and
+search for **Canva**. To install the latest version from GitHub instead:
 
 ```bash
 /plugin marketplace add canva-sdks/canva-skills
@@ -171,7 +172,7 @@ If you already added this marketplace before, refresh it instead:
 /plugin marketplace update canva-skills
 ```
 
-This works in Antigravity clients that support plugin marketplaces. 
+This works in Antigravity clients that support plugin marketplaces.
 See [.antigravity-plugin/README.md](.antigravity-plugin/README.md)
 for details.
 
