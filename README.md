@@ -60,6 +60,20 @@ Create editable Instagram posts, stories, and carousels in Canva, then expand th
 - Inspects every page for text fit, contrast, layering, and image proportions, and repairs defects before delivery
 - Prefixes every Canva tool `user_intent` with `[skill:canva-instagram-post]`
 
+### canva-create-flyer
+
+Create a new single-page flyer in Canva from a brief, with every fact checked against what the user supplied.
+
+**Use when:** You want a printable flyer, leaflet, or handout for an event, sale, opening, class, service, job ad, or community notice.
+
+**Capabilities:**
+
+- Gathers the facts the flyer must carry (what, when, where, who, price, call to action) and never invents missing ones
+- Settles paper size and orientation, and uses a brand kit, brand template, or reference design when requested
+- Creates an editable Canva design with `create-design`
+- Verifies every date, price, and contact detail against the source, and repairs defects before delivery
+- Returns the Canva edit link, plus a PDF or PNG export on request
+
 ### canva-bulk-create
 
 Bulk-create Canva designs from tabular data using a brand template, one design per row.
@@ -243,6 +257,9 @@ Simply reference the skills naturally in your conversations:
 # Social media resize
 "Resize design DABcd1234ef for all social media platforms"
 
+# Create flyer
+"Make a flyer for our spring open day on 14 March"
+
 # Bulk create
 "Bulk create designs from this spreadsheet using my brand template"
 
@@ -295,6 +312,7 @@ canva-skills/
         │   ├── canva-autofill/
         │   ├── canva-brand-check/
         │   ├── canva-bulk-create/
+        │   ├── canva-create-flyer/
         │   ├── canva-edit-design/
         │   ├── canva-design-feedback/
         │   ├── canva-implement-feedback/
