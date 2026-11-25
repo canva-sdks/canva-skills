@@ -29,7 +29,7 @@ Once parsed, show the user:
 If the user hasn't specified a template, search for autofill-capable ones:
 
 ```
-Canva:search-brand-templates  dataset=non_empty
+search-brand-templates  dataset=non_empty
 ```
 
 Show the results and ask the user to pick one. If they already named or described a template, search with that query.
@@ -37,10 +37,10 @@ Show the results and ask the user to pick one. If they already named or describe
 ### Step 3: Inspect the Template Schema
 
 ```
-Canva:get-brand-template-dataset  template_id=<selected_id>
+get-brand-template-dataset  template_id=<selected_id>
 ```
 
-This returns the field names and types (text, image, chart) that the template expects.
+This returns the field names and types that the template expects. Use the live `autofill-design` schema when building values.
 
 ### Step 4: Map CSV Columns to Template Fields
 
@@ -71,18 +71,18 @@ Use the asset ID value directly in the `autofill-design` call:
 ```
 
 **Pattern B — CSV has an image URL column** (e.g. `image_url`):
-URLs cannot be passed directly to `autofill-design`. Upload each URL to Canva first using `Canva:upload-asset-from-url`, capture the returned asset ID, then use it in the autofill call. Do the upload immediately before creating that row's design so failures stay localised.
+URLs cannot be passed directly to `autofill-design`. Upload each URL to Canva first using `upload-asset-from-url` with the URL and an asset name, capture the returned asset ID, then use it in the autofill call. Do the upload immediately before creating that row's design so failures stay localised.
 
 **Pattern C — No image column in CSV:**
 Ask the user whether to skip the image field (template default image stays) or abort. Skipping is safe — just omit the image key from the `data` payload entirely.
 
 ### Step 5: Bulk Create — One Design per Row
 
-Loop through every CSV row and call `Canva:autofill-design` for each one. Call them **sequentially**, not all at once — the API may have rate limits and sequential calls are easier to debug.
+Loop through every CSV row and call `autofill-design` for each one. Call them **sequentially**, not all at once — the API may have rate limits and sequential calls are easier to debug.
 
 For each row:
 
-1. If the row has an image URL column (Pattern B), first call `Canva:upload-asset-from-url` to get a Canva asset ID.
+1. If the row has an image URL column (Pattern B), first call `upload-asset-from-url` to get a Canva asset ID.
 2. Build the `data` payload from the confirmed field mapping:
 
 ```json
@@ -92,7 +92,7 @@ For each row:
 }
 ```
 
-3. Call `Canva:autofill-design` with the template ID, data payload, and a descriptive title using the row number or a meaningful column value (e.g. `"Bulk Design - Row 3 - <identifier>"`).
+3. Call `autofill-design` with `brand_template_id`, `data`, and a descriptive `title` using the row number or a meaningful column value (e.g. `"Bulk Design - Row 3 - <identifier>"`).
 
 Track results as you go:
 

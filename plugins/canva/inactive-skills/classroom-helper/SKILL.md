@@ -13,30 +13,28 @@ Transform a lesson plan into a clear, teachable presentation: learning goals on 
    - **Do not** open with a generic two-part prompt (e.g. “paste the plan” *and then* “describe the topic and key points”). The **lesson plan** already carries topic and key points; asking twice is redundant and skips this step’s real work (text vs Canva link vs search).
    - If the user has **not** yet given a source, ask **one** short question that matches this step only, for example: *Paste your full lesson plan here, **or** give a Canva design link or **design ID**, **or** the exact title to search in Canva; if the plan is in a file, paste the contents or give a path you can read.* Then proceed along the branch below.
    - If the user provides the lesson plan as **text in chat**, use that as the full source
-   - If the user provides a **Canva design ID** directly (the identifier from a design URL—typically starts with `D`, e.g. `DABcd1234ef`), use that value as `design_id` with `Canva:start-editing-transaction` to read its text content (same as reading from a link, without URL parsing)
-   - If the user provides a **Canva design link** (e.g., `https://www.canva.com/design/DAG.../...`), extract the design ID from the path and use `Canva:start-editing-transaction` to read its text content
-   - If the user references a **Canva doc or design by name**, use `Canva:search-designs` to find it, then `Canva:start-editing-transaction` to read its contents
+   - If the user provides a **Canva design ID** directly (the identifier from a design URL—typically starts with `D`, e.g. `DABcd1234ef`), use that value as `design_id` with `read-design` to read its text content (same as reading from a link, without URL parsing)
+   - If the user provides a **Canva design link** (e.g., `https://www.canva.com/design/DAG.../...`), extract the design ID from the path and use `read-design` to read its text content
+   - If the user references a **Canva doc or design by name**, use `search-designs` to find it, then `read-design` to read its contents
+
+   - Read source content without opening an editing transaction. Use `read-design-v2` if that is the reader available on the host.
 
 2. **List available brand kits**
-   - Call `Canva:list-brand-kits` to retrieve the user's brand kits
+   - Call `list-brand-kits` to retrieve the user's brand kits
    - If only one brand kit exists, use it automatically without asking
    - If multiple brand kits exist, present the options and ask the user to select one (school or district brand, if relevant)
 
 3. **Generate the presentation**
-   - Call `Canva:generate-design` with:
-     - `design_type`: "presentation"
-     - `brand_kit_id`: the selected brand kit ID
-     - `query`: follow the **Lesson plan → deck query format** below (always a **multi-slide** deck—see opening lines of that format)
-   - Show the generated candidates (thumbnails/previews as returned) to the user
+   - Call `create-design` with `format: "Presentation"` and a `brief` following the structure below. Pass the selected `brand_kit_id` only if the live `create-design` schema accepts it; otherwise use the host's brand-aware generation route.
+   - If no widget is shown, poll `get-create-design-async-job` with the returned job ID and continuation token, respecting the polling policy.
 
-4. **Finalize**
-   - Ask the user which candidate they prefer
-   - Call `Canva:create-design-from-candidate` to create the editable design
-   - Provide the link to the new presentation and a one-line reminder of slide order vs. lesson phases (e.g., "Opening → Instruction → Practice → Check → Close")
+4. **Deliver**
+   - Inspect the finished presentation with the available design reader and check that it is a multi-slide deck.
+   - Provide the edit link and recap how the slides map to the lesson phases.
 
-## Lesson plan → deck query format
+## Lesson plan → deck brief format
 
-Structure the `query` for `Canva:generate-design` so the model in Canva receives **pedagogy-first** instructions. This skill **only** targets **multi-slide presentations** (`design_type` is always `"presentation"`). Open the `query` with **one line**: the **total slide count** and that the output must be a **standard multi-slide deck** (one slide per item in the slide plan below)—never a poster, flyer, or single-page layout.
+Structure the `brief` for `create-design` around the learning goals of a multi-slide presentation. Open the `brief` with **one line**: the **total slide count** and that the output must be a **standard multi-slide deck** (one slide per item in the slide plan below)—never a poster, flyer, or single-page layout.
 
 Include these sections (omit only if the lesson plan truly has no data for that section):
 
@@ -76,20 +74,21 @@ For each slide, include:
 **Why automated visuals often miss the lesson**  
 Across **any subject** (literacy, history, STEM, arts, SEL, etc.), AI-assisted and auto-picked images are **unreliable for**: readable text **inside** pictures; exact facts (dates, names, quotes, vocabulary); maps, timelines, or charts that must be precise; depictions of people, places, or events that must match the source material; and any slide where **correct wording** matters for assessment or standards alignment. Models may garble language, mix languages, invent labels, or choose **plausible but wrong** imagery.
 
-**What to put in the `query` (mitigations — any lesson plan)**  
-Include explicit **global visual rules** near the start of the generated query, for example:
+**What to put in the `brief` (mitigations — any lesson plan)**
+
+Include explicit **global visual rules** near the start of the brief, for example:
 - Prefer **simple photos, textures, icons, or abstract backgrounds**; avoid asking the generator for **dense infographics, labeled illustrations, or “posters with lots of text”** in the image itself.
 - **Do not rely on text baked into images** — state that key terms, definitions, questions, numbers, and **all curriculum-critical wording** belong in **on-slide text** (in the lesson language, usually English), not inside pictures.
 - For slides where **accuracy is essential** (vocabulary, timelines, processes, data, primary sources, artwork titles, etc.): ask for **minimal or decorative imagery** and put the correct content in bullets/titles; remind that the teacher must **verify** on-slide text too.
 - Optionally ask for an overall **image-light or clean-template** feel so educators can swap in vetted **Elements**, uploads, or screenshots from trusted sources after generation.
 
 **After the deck exists**  
-Advise a **full pass in the Canva editor**: replace misleading images, fix on-slide copy, and add or paste vetted media. The editing API (`perform-editing-operations`, etc.) can help with text and some media in follow-up workflows—see `implement-feedback` patterns—but **curriculum-faithful** visuals and wording are ultimately **human-reviewed**.
+Advise a **full pass in the Canva editor**: replace misleading images, fix on-slide copy, and add or paste vetted media. The `canva-edit-design` skill can help with text and media in follow-up workflows—but **curriculum-faithful** visuals and wording are ultimately **human-reviewed**.
 
 **Set expectations when handing off**  
 Briefly warn that **auto-generated lesson visuals are drafts**, not guaranteed accurate for any topic—teachers should treat images and on-slide facts as **unverified** until reviewed.
 
 ## Notes
 
-- Same tool chain as branded presentation skills: brand kit + `generate-design` + `create-design-from-candidate`
+- Same tool chain as branded presentation skills: brand kit + `create-design`
 - **Autofill** and advanced generation features may require a **paid Canva plan** — if tools error, explain briefly and suggest manual edits in Canva

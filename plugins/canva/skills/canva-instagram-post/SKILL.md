@@ -25,19 +25,19 @@ Use the supplied facts, photos, intent and brand references. Inspect existing de
 
 **Tools, when needed:**
 - `search-designs`: Find an existing design.
-- `read-design`: Read its content, metadata and previews.
+- `read-design` or `read-design-v2`: Read content, metadata and previews with the reader the host exposes.
 - `get-design-pages`: Check pages and their order.
 - `get-assets`: Identify images before replacing them.
 - `list-brand-kits` / `search-brand-templates`: Find requested brand resources.
 
 ### 2. Create
 
-Send the user's prompt, intent and relevant context and unpadded to Canva. Pass supplied images and designs as references exactly. Preserve product imagery, packaging and factual claims. Fix visible defects before using the result as a template.
+Send the user's prompt, intent and relevant context to Canva. Pass the Canva IDs for reference images and designs. Preserve product imagery, packaging and factual claims. Fix visible defects before using the result as a template.
 
 **Tools:**
-- `create-design`: Create a new editable post. Follow its supported brand-kit or brand-template route when requested.
+- `create-design`: Create a new editable post. Use the chosen brand kit when requested. For an existing Brand Template, use `create-design-from-brand-template` for an unfilled copy or `get-brand-template-dataset` then `autofill-design` to populate named fields.
 - `upload-asset-from-url`: Upload reference media when needed and supported by its inputs.
-- `get-create-design-async-job`: Continue a pending creation job using its returned IDs and polling instructions.
+- `get-create-design-async-job`: If no widget is shown, poll with the returned job ID and continuation token, following the polling instructions.
 
 ### 3. Offer
 
@@ -55,7 +55,7 @@ Reuse the approved design. Preserve factual claims and translate naturally. Resp
 
 **Tools, as appropriate:**
 - `resize-design`: Create another format using explicit target dimensions; preserve the returned new design ID.
-- `edit-design`: Change wording, translation or layout within an active transaction.
+- `read-design` and `edit-design`: Open a transaction and stage wording, translation or layout changes. Follow the host-specific pairing in `canva-edit-design`.
 - `get-design-dataset` then `autofill-design`: Populate named fields in an existing design.
 - `get-brand-template-dataset`: Check a Brand Template's fields before using its supported creation/autofill route.
 
@@ -64,17 +64,17 @@ Reuse the approved design. Preserve factual claims and translate naturally. Resp
 Visually check every page for text fit, readability, layering, alignment, image proportions and correct dimensions. Repair defects within the requested design, then inspect fresh previews without asking permission for each edit. Preserve the user's copy and creative direction. Recheck after merging or exporting. Tool success is not visual approval; disclose checks that remain blocked.
 
 **Tools:**
-- `read-design` / `get-design-pages`: Inspect saved previews and page information.
+- Use the available design reader or `get-design-pages` to inspect saved previews and page information.
 - `get-assets`: Identify media when needed.
-- `edit-design`: Apply repairs and inspect returned draft previews.
+- Use the same editing tool to stage repairs and inspect the returned draft previews.
 
 ### 6. Deliver
 
 Finish repairs before requesting any required save approval. Request one batched approval when the tool requires it, explaining that requirement. Save, verify the result and return edit links with page details. Never describe drafts as saved or designs as published.
 
 **Tools:**
-- `edit-design`: Commit the transaction after any approval required by the tool.
-- `read-design` / `get-design-pages`: Verify the saved result.
+- After explicit approval of the preview, use the same editing tool with `finalize: "commit"` in a separate call.
+- Use the available design reader or `get-design-pages` to verify the saved result.
 
 **Tool rule:** Follow current tool schemas, including how to open editing transactions. Prefix every `user_intent` with `[skill:canva-instagram-post]` on every call, including repeat calls. Preserve returned design, transaction and job IDs. Use `create-design` instead of legacy generation tools when available.
 
