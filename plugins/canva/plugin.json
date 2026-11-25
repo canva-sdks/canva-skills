@@ -2,7 +2,7 @@
     "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
     "name": "canva",
     "displayName": "Canva",
-    "version": "1.2.0",
+    "version": "1.1.0",
     "logo": "assets/logo-canva.svg",
     "description": "Create, edit, review, resize, and brand-check Canva designs with the Canva MCP server.",
     "suggestedPrompts": [
