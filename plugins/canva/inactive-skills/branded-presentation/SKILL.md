@@ -23,7 +23,7 @@ Create professional, on-brand presentations in Canva from user-provided outlines
    - If multiple brand kits exist, present the options and ask the user to select one
 
 3. **Generate the presentation**
-   - Call `create-design` with `format: "Presentation"`, the selected `brand_kit_id`, and a `brief` following the structure below.
+   - Call `create-design` with `format: "Presentation"` and a `brief` following the structure below. Pass the selected `brand_kit_id` only if the live `create-design` schema accepts it; otherwise use the host's brand-aware generation route.
    - If no widget is shown, poll `get-create-design-async-job` with the returned job ID and continuation token, respecting the polling policy.
 
 4. **Deliver**
