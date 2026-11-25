@@ -9,7 +9,12 @@ This folder contains the Antigravity plugin marketplace catalog for this repo.
 - The Antigravity manifest registers the active shared skills from
   `plugins/canva/skills/`.
 
-Install from GitHub with:
+Canva is listed in the Antigravity plugin marketplace. In the Antigravity app,
+open **Customizations → Plugins → Discover** and search for **Canva**. The
+marketplace listing can lag behind this repo, so check its version against
+`plugins/canva/plugin.json`.
+
+To install the latest version from GitHub instead:
 
 ```bash
 /plugin marketplace add canva-sdks/canva-skills
@@ -25,4 +30,4 @@ If you already added this marketplace before, refresh it instead:
 Then connect the Canva MCP server and sign in when prompted. Use the skills
 naturally (e.g. "resize design DAB... for all social media platforms").
 
-This works in Antigravity that support plugin marketplaces.
+This works in Antigravity clients that support plugin marketplaces.
