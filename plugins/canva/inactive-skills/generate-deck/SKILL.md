@@ -45,7 +45,7 @@ For every deck request:
 - Call `list-brand-kits` to find available brand kits.
 - Suggest the available brand kits to the user and ask them to choose one before generation.
 - Do not auto-select a brand kit, even if only one kit is available or one kit seems obviously relevant.
-- Pass the selected kit as `brand_kit_id` when calling `create-design`.
+- Pass the selected kit as `brand_kit_id` when the live `create-design` schema accepts it; otherwise use the host's brand-aware generation route.
 - If no brand kits are available, say that none were found and ask whether to continue without a brand kit.
 - If `list-brand-kits` reports missing `brandkit:read` scopes, ask the user to disconnect and reconnect the Canva app before continuing.
 - If the user explicitly chooses to continue without a brand kit, keep the deck brand-aware using the supplied company, product, tone, colors, or messaging, without inventing brand rules.
