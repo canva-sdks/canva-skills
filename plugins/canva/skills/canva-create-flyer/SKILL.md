@@ -17,7 +17,7 @@ A flyer is judged in about three seconds, usually on paper, and nobody can click
 ## Before you start
 
 - Required: `create-design`. If it is missing, use the exposed generation tool whose description covers flyers and follow that description. If there is none, tell the user and stop.
-- Used when exposed: `get-create-design-async-job`, `list-brand-kits`, `search-brand-templates`, `upload-asset-from-url`, `create-upload-url`, `read-design` or `read-design-v2`, `get-export-formats`, `export-design`, `resize-design`.
+- Used when exposed: `get-create-design-async-job`, `list-brand-kits`, `search-brand-templates`, `search-designs`, `resolve-shortlink`, `upload-asset-from-url`, `create-upload-url`, `read-design` or `read-design-v2`, `get-export-formats`, `export-design`, `resize-design`.
 - Tool descriptions are the source of truth for parameters. Fill `user_intent` wherever the live schema accepts it.
 
 ## Workflow
