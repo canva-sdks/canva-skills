@@ -74,6 +74,20 @@ Create a new single-page flyer in Canva from a brief, with every fact checked ag
 - Verifies every date, price, and contact detail against the source, and repairs defects before delivery
 - Returns the Canva edit link, plus a PDF or PNG export on request
 
+### canva-product-ad
+
+Create an editable ecommerce product ad in Canva from your own product image, and confirm the ad shows the same product.
+
+**Use when:** You want a social or marketplace ad built around a real product photo, for one product or up to five from a catalogue.
+
+**Capabilities:**
+
+- Takes product details from a message, a CSV or spreadsheet, a product page URL, or a connected store, and never invents prices or discounts
+- Uploads the product photo and creates an editable Canva design with `create-design`, using the photo as a reference
+- Confirms the product in the ad matches the source photo, exporting at full size when the photo has a busy background
+- Swaps the original photo back in when the product or scene was altered, and repairs layout defects before delivery
+- Returns the Canva edit link with the product-match verdict for each ad
+
 ### canva-bulk-create
 
 Bulk-create Canva designs from tabular data using a brand template, one design per row.
@@ -260,6 +274,9 @@ Simply reference the skills naturally in your conversations:
 # Create flyer
 "Make a flyer for our spring open day on 14 March"
 
+# Product ad
+"Make an Instagram ad for this product photo: Trail Runner, $165, Shop now"
+
 # Bulk create
 "Bulk create designs from this spreadsheet using my brand template"
 
@@ -317,6 +334,7 @@ canva-skills/
         │   ├── canva-design-feedback/
         │   ├── canva-implement-feedback/
         │   ├── canva-instagram-post/
+        │   ├── canva-product-ad/
         │   └── canva-resize-for-social-media/
         └── inactive-skills/              # Kept in repo, not registered by plugin hosts
             ├── branded-presentation/
