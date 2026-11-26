@@ -18,6 +18,7 @@
     "marketing"
   ],
   "skills": [
+    "./skills/canva-agent-guide",
     "./skills/canva-resize-for-social-media",
     "./skills/canva-instagram-post",
     "./skills/canva-create-flyer",
@@ -27,6 +28,8 @@
     "./skills/canva-implement-feedback",
     "./skills/canva-edit-design",
     "./skills/canva-design-feedback",
-    "./skills/canva-brand-check"
-  ]
+    "./skills/canva-brand-check",
+    "./skills/canva-cli"
+  ],
+  "mcpServers": "./.mcp.json"
 }
