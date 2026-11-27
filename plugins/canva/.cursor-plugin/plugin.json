@@ -6,6 +6,7 @@
   "author": {
     "name": "Canva"
   },
+  "logo": "assets/logo.png",
   "skills": "./skills/",
   "mcpServers": "./.mcp.json"
 }
